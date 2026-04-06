@@ -1,8 +1,3 @@
-# Package: [Insert Package Name Here]
+# Package: [data]
 
-**Student Instructions:**
-Please delete this text and replace it with a brief description of this package.
-
-In your description, make sure to explain:
-* The main objective and responsibility of this package.
-* The type of classes, interfaces or functionalities that belong inside it.
+This package contains the main data classes of the game. These classes represent the main objects such as the ship, drones and other elements of the game.
