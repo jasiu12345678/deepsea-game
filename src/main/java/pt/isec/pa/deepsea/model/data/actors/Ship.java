@@ -41,4 +41,7 @@ public class Ship {
     public Position getLocation() {
         return location;
     }
+    public boolean hasActiveDrones() {
+        return !deployedDrones.isEmpty();
+    }
 }

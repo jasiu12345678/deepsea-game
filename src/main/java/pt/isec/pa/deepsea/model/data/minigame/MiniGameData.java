@@ -2,6 +2,10 @@ package pt.isec.pa.deepsea.model.data.minigame;
 
 import pt.isec.pa.deepsea.model.GameConstants;
 
+// moving puzzle minigame, for now its just a 2d array filled with numbers, but in the future it will be shuffled so
+// you will have to move the tiles around to get them in the right order, for example to get a bonus, you will have to
+// organise the tiles with limited moves.
+
 public class MiniGameData {
     private final int[][] grid;
     private int movesCount;

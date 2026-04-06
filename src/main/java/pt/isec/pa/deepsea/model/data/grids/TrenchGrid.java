@@ -55,4 +55,8 @@ public class TrenchGrid {
     public GridElement[][] getGrid() {
         return grid;
     }
+
+    public boolean isCellRock(int x, int y) {
+        return grid[y][x] instanceof Rock;
+    }
 }
