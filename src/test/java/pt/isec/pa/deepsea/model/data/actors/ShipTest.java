@@ -18,6 +18,7 @@ class ShipTest {
                 "The ship should start with 3 active drones.");
         assertNotNull(ship.getCollectedArtifacts(), "List of artifacts should be initialized.");
         assertTrue(ship.getCollectedArtifacts().isEmpty(), "List of artifacts should not be empty at start.");
+        System.out.println(ship.getActiveDrones().toString());
     }
 
     @Test

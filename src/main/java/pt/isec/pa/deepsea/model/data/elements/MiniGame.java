@@ -1,4 +1,4 @@
-package pt.isec.pa.deepsea.model.data.minigame;
+package pt.isec.pa.deepsea.model.data.elements;
 
 import pt.isec.pa.deepsea.model.GameConstants;
 
@@ -6,11 +6,11 @@ import pt.isec.pa.deepsea.model.GameConstants;
 // you will have to move the tiles around to get them in the right order, for example to get a bonus, you will have to
 // organise the tiles with limited moves.
 
-public class MiniGameData {
+public class MiniGame {
     private final int[][] grid;
     private int movesCount;
 
-    public MiniGameData() {
+    public MiniGame() {
         this.grid = new int[GameConstants.MINIGAME_GRID_SIZE][GameConstants.MINIGAME_GRID_SIZE];
         this.movesCount = 0;
         initializeGrid();

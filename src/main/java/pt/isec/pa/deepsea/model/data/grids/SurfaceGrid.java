@@ -5,6 +5,8 @@ import pt.isec.pa.deepsea.model.GameConstants;
 public class SurfaceGrid {
     private final SurfaceCell[][] surface;
 
+    // initializing surface grid with surfacecell, which holds the trench and seabed grids
+    // so i dont have to make many independent grids.
     public SurfaceGrid() {
         this.surface = new SurfaceCell[GameConstants.SURFACE_HEIGHT][GameConstants.SURFACE_WIDTH];
         for (int y = 0; y < GameConstants.SURFACE_HEIGHT; y++) {

@@ -3,21 +3,18 @@ package pt.isec.pa.deepsea.model;
 import pt.isec.pa.deepsea.model.data.actors.Drone;
 import pt.isec.pa.deepsea.model.data.actors.Ship;
 import pt.isec.pa.deepsea.model.data.grids.SurfaceGrid;
-import pt.isec.pa.deepsea.model.data.minigame.MiniGameData;
 
-import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Game {
     private final Ship ship;
     private final SurfaceGrid map;
-    private final MiniGameData miniGame;
 
     public Game() {
         this.ship = new Ship();
         this.map = new SurfaceGrid();
-        this.miniGame = new MiniGameData();
     }
 
     public Ship getShip() {
@@ -28,20 +25,17 @@ public class Game {
         return map;
     }
 
-    public MiniGameData getMiniGame() {
-        return miniGame;
-    }
 
     public List<Drone> getDronesSortedByFuel() {
-        return ship.getActiveDrones().stream()
-                .sorted(Comparator.comparingInt(Drone::getCurrentFuel).reversed())
-                .collect(Collectors.toList());
+        List<Drone> dronesSortedByFuel = new ArrayList<>(ship.getActiveDrones());
+        dronesSortedByFuel.sort(new Drone.SortByFuel());
+        return Collections.unmodifiableList(dronesSortedByFuel);
     }
 
     public List<Drone> getDronesSortedByHullIntegrity() {
-        return ship.getActiveDrones().stream()
-                .sorted(Comparator.comparingInt(Drone::getHullIntegrity).reversed())
-                .collect(Collectors.toList());
+        List<Drone> dronesSortedByHuel = new ArrayList<>(ship.getActiveDrones());
+        dronesSortedByHuel.sort(new Drone.SortByHuelIntegrity());
+        return Collections.unmodifiableList(dronesSortedByHuel);
     }
 
     public void activateCurrentZone(int x, int y, boolean isSeabed) {

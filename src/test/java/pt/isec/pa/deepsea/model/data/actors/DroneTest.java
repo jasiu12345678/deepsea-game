@@ -12,7 +12,8 @@ class DroneTest {
         Drone drone = new Drone();
 
         assertEquals(GameConstants.DRONE_MAX_FUEL, drone.getCurrentFuel());
-        assertNull(drone.getLocation(), "Drone should have null location (onship)");
+        assertEquals(drone.getX(), 0, "Drone should have x=0 (onship)");
+        assertEquals(drone.getY(), 0, "Drone should have y=0 (onship)");
         assertNotNull(drone.getTransportedResources(), "Drone resources cannot be null");
         assertTrue(drone.getTransportedResources().isEmpty(), "Drone should start with no transported resources");
     }
