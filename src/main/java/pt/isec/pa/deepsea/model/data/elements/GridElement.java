@@ -2,21 +2,20 @@ package pt.isec.pa.deepsea.model.data.elements;
 
 public abstract class GridElement {
 
-    private static int nextId = 1001;
     private final int id;
-    private boolean isReavealed;
+    private boolean isRevealed;
 
-    public GridElement() {
-        this.id = nextId++;
-        this.isReavealed = false;
+    public GridElement(int id) {
+        this.id = id;
+        this.isRevealed = false;
     }
 
     public void reveal() {
-        this.isReavealed = true;
+        this.isRevealed = true;
     }
 
-    public boolean isReavealed() {
-        return isReavealed;
+    public boolean isRevealed() {
+        return isRevealed;
     }
 
 }

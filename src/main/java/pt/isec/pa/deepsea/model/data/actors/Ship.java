@@ -17,7 +17,7 @@ public class Ship {
         this.oreQuantity = 0;
         this.collectedArtifacts = new ArrayList<>();
         this.activeDrones = new HashSet<>();
-        for (int i=0; i<GameConstants.STARTING_DRONES; i++) {
+        for (int i = 0; i<GameConstants.DRONE_MAX_QUANTITY; i++) {
             activeDrones.add(new Drone());
         }
         this.x = GameConstants.SURFACE_WIDTH / 2;

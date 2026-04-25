@@ -1,4 +1,7 @@
 package pt.isec.pa.deepsea.model.data.elements;
 
-public class Monster extends GridElement{
+public class Monster extends Obstacle {
+    public Monster() {
+        super();
+    }
 }

@@ -11,12 +11,11 @@ public final class GameConstants {
     public static final int SHIP_MAX_FUEL = 100;
 
     public static final int DRONE_MAX_FUEL = 30;
-    public static final int STARTING_DRONES = 3;
-    public static final int DRONE_MAX_QUANTITY = 10;
+    public static final int DRONE_MAX_QUANTITY = 3;
     public static final int DRONE_MAX_HULL = 100;
 
-    public static final int SURFACE_WIDTH = 5;
-    public static final int SURFACE_HEIGHT = 5;
+    public static final int SURFACE_WIDTH = 30;
+    public static final int SURFACE_HEIGHT = 15;
 
     public static final int TRENCH_WIDTH = 10;
     public static final int TRENCH_HEIGHT = 15;

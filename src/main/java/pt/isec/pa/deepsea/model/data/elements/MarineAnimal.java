@@ -1,4 +1,7 @@
 package pt.isec.pa.deepsea.model.data.elements;
 
-public class MarineAnimal extends GridElement {
+public class MarineAnimal extends Obstacle {
+    public MarineAnimal() {
+        super();
+    }
 }

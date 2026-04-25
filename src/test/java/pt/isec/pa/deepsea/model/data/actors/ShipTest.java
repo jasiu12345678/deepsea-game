@@ -14,7 +14,7 @@ class ShipTest {
         assertEquals(GameConstants.SHIP_MAX_FUEL, ship.getCurrentFuel(), "The ship should start with max fuel.");
         assertEquals(0, ship.getOreQuantity(), "The ship should start with 0 ores.");
         assertNotNull(ship.getActiveDrones(), "The ship should start with 3 active drones.");
-        assertEquals(GameConstants.STARTING_DRONES, ship.getActiveDrones().size(),
+        assertEquals(GameConstants.DRONE_MAX_QUANTITY, ship.getActiveDrones().size(),
                 "The ship should start with 3 active drones.");
         assertNotNull(ship.getCollectedArtifacts(), "List of artifacts should be initialized.");
         assertTrue(ship.getCollectedArtifacts().isEmpty(), "List of artifacts should not be empty at start.");
