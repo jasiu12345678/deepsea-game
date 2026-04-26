@@ -6,8 +6,7 @@ import org.junit.jupiter.api.Test;
 import pt.isec.pa.deepsea.model.GameConstants;
 import pt.isec.pa.deepsea.model.data.elements.Rock;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class TrenchGridTest {
 
@@ -24,14 +23,12 @@ class TrenchGridTest {
     @Test
     void testRocksNeverExceedFiftyPercentOfWidth() {
         TrenchGrid trench = new TrenchGrid();
-        var grid = trench.getGrid();
-
         int maxAllowedRocks = (int) (GameConstants.TRENCH_WIDTH * GameConstants.MAX_ROCKS_PERCENTAGE);
 
         for (int y = 0; y < GameConstants.TRENCH_HEIGHT; y++) {
             int rockCount = 0;
             for (int x = 0; x < GameConstants.TRENCH_WIDTH; x++) {
-                if (grid[y][x] instanceof Rock) {
+                if (trench.getElement(x, y) instanceof Rock) {
                     rockCount++;
                 }
             }
@@ -42,14 +39,12 @@ class TrenchGridTest {
     @Test
     void testPresentationModeRockGeneration() {
         GameConstants.PRESENTATION_MODE = true;
-
         TrenchGrid trench = new TrenchGrid();
-        var grid = trench.getGrid();
 
         for (int y = 0; y < GameConstants.TRENCH_HEIGHT; y++) {
-            assertTrue(grid[y][0] instanceof Rock, "Missing left rock in row " + y);
-            assertTrue(grid[y][GameConstants.TRENCH_WIDTH - 1] instanceof Rock, "Missing right rock in row " + y);
-            assertNull(grid[y][1], "unexptected rock");
+            assertTrue(trench.getElement(0, y) instanceof Rock, "Missing left rock in row " + y);
+            assertTrue(trench.getElement(GameConstants.TRENCH_WIDTH - 1, y) instanceof Rock, "Missing right rock in row " + y);
+            assertNull(trench.getElement(1, y), "Unexpected rock at column 1");
         }
     }
 }

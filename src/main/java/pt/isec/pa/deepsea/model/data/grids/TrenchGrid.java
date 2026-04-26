@@ -52,11 +52,11 @@ public class TrenchGrid {
         }
     }
 
-    public GridElement[][] getGrid() {
-        return grid;
+    GridElement getElement(int x, int y) {
+        if (y < 0 || y >= grid.length || x < 0 || x >= grid[y].length) {
+            return null;
+        }
+        return grid[y][x];
     }
 
-    public boolean isCellRock(int x, int y) {
-        return grid[y][x] instanceof Rock;
-    }
 }

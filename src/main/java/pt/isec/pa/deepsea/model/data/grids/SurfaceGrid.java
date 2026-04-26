@@ -18,10 +18,11 @@ public class SurfaceGrid {
         }
     }
 
-    public SurfaceCell getCell(int x, int y) {
+    SurfaceCell getCell(int x, int y) {
         if (x < 0 || x >= GameConstants.SURFACE_WIDTH || y < 0 || y >= GameConstants.SURFACE_HEIGHT) {
             return null;
         }
         return surface[y][x];
     }
+
 }

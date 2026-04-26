@@ -7,13 +7,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class GameTest {
 
     @Test
-    void testGameCorrectInitDroneCount() {
-        Game game = new Game();
-        int droneCount = game.getShip().getActiveDrones().size();
-        assertEquals(3, droneCount, "The game should initialize with 3 active drones");
-    }
-
-    @Test
     void getDronesSortedByFuel() {
         Game game = new Game();
         var dronesByFuel = game.getDronesSortedByFuel();

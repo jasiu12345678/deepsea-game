@@ -17,15 +17,6 @@ public class Game {
         this.map = new SurfaceGrid();
     }
 
-    public Ship getShip() {
-        return ship;
-    }
-
-    public SurfaceGrid getMap() {
-        return map;
-    }
-
-
     public List<Drone> getDronesSortedByFuel() {
         List<Drone> dronesSortedByFuel = new ArrayList<>(ship.getActiveDrones());
         dronesSortedByFuel.sort(new Drone.SortByFuel());
@@ -33,19 +24,9 @@ public class Game {
     }
 
     public List<Drone> getDronesSortedByHullIntegrity() {
-        List<Drone> dronesSortedByHuel = new ArrayList<>(ship.getActiveDrones());
-        dronesSortedByHuel.sort(new Drone.SortByHuelIntegrity());
-        return Collections.unmodifiableList(dronesSortedByHuel);
+        List<Drone> dronesSortedByHull = new ArrayList<>(ship.getActiveDrones());
+        dronesSortedByHull.sort(new Drone.SortByHullIntegrity());
+        return Collections.unmodifiableList(dronesSortedByHull);
     }
 
-    public void activateCurrentZone(int x, int y, boolean isSeabed) {
-        var cell = map.getCell(x, y);
-        if (cell != null) {
-            if (isSeabed) {
-                cell.getSeabed().activateZone();
-            } else {
-                cell.getTrench().activateZone();
-            }
-        }
-    }
 }

@@ -23,16 +23,16 @@ public class SeabedGrid {
 
     private void generateSeabed(boolean isCentralForPresentation) {
         if (GameConstants.PRESENTATION_MODE) {
-            revealAll();
 
             grid[0][0] = new Monster();
-            grid[0][1] = new Ore(GameConstants.MIN_ORE_VALUE_PRESENTATION);
-            grid[0][2] = new Ore(GameConstants.MAX_ORE_VALUE);
+            grid[1][0] = new Ore(GameConstants.MIN_ORE_VALUE_PRESENTATION);
+            grid[2][0] = new Ore(GameConstants.MAX_ORE_VALUE);
 
             if (isCentralForPresentation) {
                 grid[GameConstants.SEABED_HEIGHT - 2][GameConstants.SEABED_WIDTH / 2] = new Artifact();
                 grid[GameConstants.SEABED_HEIGHT - 1][GameConstants.SEABED_WIDTH / 2] = new Artifact();
             }
+            revealAll();
 
         }
     }
@@ -40,7 +40,12 @@ public class SeabedGrid {
     public void activateZone() {
     }
 
-    public GridElement[][] getGrid() {
-        return grid;
+    GridElement getElement(int x, int y) {
+        if (y < 0 || y >= grid.length || x < 0 || x >= grid[y].length) {
+            return null;
+        }
+        return grid[y][x];
     }
+
+
 }

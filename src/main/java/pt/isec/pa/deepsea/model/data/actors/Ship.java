@@ -25,8 +25,7 @@ public class Ship {
     }
 
     public Set<Drone> getActiveDrones() {
-        Set<Drone> unmodifiableActiveDrones = Collections.unmodifiableSet(activeDrones);
-        return unmodifiableActiveDrones;
+        return new HashSet<>(activeDrones);
     }
     public int getCurrentFuel() {
         return currentFuel;
@@ -35,8 +34,7 @@ public class Ship {
         return oreQuantity;
     }
     public List<Artifact> getCollectedArtifacts() {
-        List<Artifact> unmodifiableCollectedArtifacts = Collections.unmodifiableList(collectedArtifacts);
-        return unmodifiableCollectedArtifacts;
+        return new ArrayList<>(collectedArtifacts);
     }
     public int getX() {
         return x;

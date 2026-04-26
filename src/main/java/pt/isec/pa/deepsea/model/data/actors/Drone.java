@@ -4,7 +4,6 @@ import pt.isec.pa.deepsea.model.GameConstants;
 import pt.isec.pa.deepsea.model.data.elements.GridElement;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -38,7 +37,7 @@ public class Drone {
         }
     }
 
-    public static class SortByHuelIntegrity implements Comparator {
+    public static class SortByHullIntegrity implements Comparator {
         public int compare(Object obj1, Object obj2) {
             Drone a = (Drone) obj1;
             Drone b = (Drone) obj2;
@@ -81,8 +80,8 @@ public class Drone {
     }
 
     public List<GridElement> getTransportedResources() {
-        List<GridElement> unmodifiableTransportedResources = Collections.unmodifiableList(transportedResources);
-        return unmodifiableTransportedResources;
+        List<GridElement> transportedResourcesCopy = new ArrayList<>(transportedResources);
+        return transportedResourcesCopy;
     }
 
 }

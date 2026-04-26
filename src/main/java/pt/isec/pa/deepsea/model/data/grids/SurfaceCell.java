@@ -9,11 +9,4 @@ public class SurfaceCell {
         this.seabed = new SeabedGrid(isCentralForPresentation);
     }
 
-    public TrenchGrid getTrench() {
-        return trench;
-    }
-
-    public SeabedGrid getSeabed() {
-        return seabed;
-    }
 }
