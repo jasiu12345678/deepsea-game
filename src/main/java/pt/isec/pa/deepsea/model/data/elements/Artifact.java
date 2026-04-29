@@ -1,11 +1,24 @@
 package pt.isec.pa.deepsea.model.data.elements;
 
-public class Artifact extends Collectible {
+import pt.isec.pa.deepsea.model.data.actors.Drone;
 
-    MiniGame miniGame = new MiniGame();
+public class Artifact extends Collectible {
+    private static final long serialVersionUID = 1L;
 
     public Artifact() {
         super();
     }
 
+    @Override
+    public ElementType onInteract(Drone drone) {
+        return ElementType.ARTIFACT;
+    }
+    @Override
+    public ElementType getType() {return ElementType.ARTIFACT;}
+
+    @Override
+    public void onMiniGameWon(Drone drone) {
+        if (drone != null)
+            drone.addToInventory(this);
+    }
 }

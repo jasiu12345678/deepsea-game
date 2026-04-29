@@ -13,8 +13,8 @@ class ShipTest {
         assertNotNull(ship);
         assertEquals(GameConstants.SHIP_MAX_FUEL, ship.getCurrentFuel(), "Ship should start with max fuel");
         assertEquals(0, ship.getOreQuantity(), "Ship should start with 0 ores");
-        assertNotNull(ship.getActiveDrones(), "Drones should not be null");
-        assertEquals(GameConstants.DRONE_MAX_QUANTITY, ship.getActiveDrones().size(), "Should have 3 drones");
+        assertNotNull(ship.getAvailableDrones(), "Drones should not be null");
+        assertEquals(GameConstants.DRONE_MAX_QUANTITY, ship.getAvailableDrones().size(), "Should have 3 drones");
         assertTrue(ship.getCollectedArtifacts().isEmpty(), "Should start with no artifacts");
         assertTrue(ship.getCollectedArtifacts().isEmpty(), "Ship should start with no artifacts");
         assertNotNull(ship.getCollectedArtifacts(), "Artifacts list should not be null");
@@ -24,7 +24,7 @@ class ShipTest {
     void testDronesInitialization() {
         Ship ship = new Ship();
 
-        for (Drone drone : ship.getActiveDrones()) {
+        for (Drone drone : ship.getAvailableDrones()) {
             assertEquals(GameConstants.DRONE_MAX_FUEL, drone.getCurrentFuel(), "Each drone should have max fuel");
             assertEquals(GameConstants.DRONE_MAX_HULL, drone.getHullIntegrity(), "Each drone should have max hull");
             assertEquals(0, drone.getX(), "Drone should start at ship (x=0)");

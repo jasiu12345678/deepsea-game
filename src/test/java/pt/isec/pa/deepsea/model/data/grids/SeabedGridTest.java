@@ -3,7 +3,6 @@ package pt.isec.pa.deepsea.model.data.grids;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import pt.isec.pa.deepsea.model.Game;
 import pt.isec.pa.deepsea.model.GameConstants;
 import pt.isec.pa.deepsea.model.data.elements.Monster;
 import pt.isec.pa.deepsea.model.data.elements.Ore;

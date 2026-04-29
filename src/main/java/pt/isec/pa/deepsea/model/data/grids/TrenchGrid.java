@@ -2,14 +2,17 @@ package pt.isec.pa.deepsea.model.data.grids;
 
 import pt.isec.pa.deepsea.model.GameConstants;
 import pt.isec.pa.deepsea.model.data.elements.*;
+import java.io.Serializable;
 import java.util.Random;
 
-public class TrenchGrid {
+public class TrenchGrid implements Serializable, IGrid {
+    private static final long serialVersionUID = 1L;
     private final GridElement[][] grid;
 
     public TrenchGrid() {
         this.grid = new GridElement[GameConstants.TRENCH_HEIGHT][GameConstants.TRENCH_WIDTH];
         generateRocks();
+        populate();
     }
 
     private void generateRocks() {
@@ -44,19 +47,40 @@ public class TrenchGrid {
         }
     }
 
+    private void populate() {
+        Random rand = new Random();
 
-    public void activateZone() {
-        if (GameConstants.PRESENTATION_MODE) {
-            grid[GameConstants.TRENCH_HEIGHT / 2][GameConstants.TRENCH_WIDTH / 2] = new MarineAnimal();
-            grid[(GameConstants.TRENCH_HEIGHT / 2) + 1][GameConstants.TRENCH_WIDTH / 2] = new OceanCurrent();
+        for (int y = 0; y < GameConstants.TRENCH_HEIGHT; y++) {
+            for (int x = 0; x < GameConstants.TRENCH_WIDTH; x++) {
+
+                if (grid[y][x] != null) continue;
+                if (y == 0 && x == GameConstants.TRENCH_WIDTH / 2) continue;
+
+                double roll = rand.nextDouble();
+
+                if (roll < 0.08) {
+                    grid[y][x] = new OceanCurrent();
+                }
+                else if (roll < 0.16) {
+                    grid[y][x] = new MarineAnimal();
+                }
+            }
         }
     }
 
-    GridElement getElement(int x, int y) {
-        if (y < 0 || y >= grid.length || x < 0 || x >= grid[y].length) {
-            return null;
-        }
+    @Override
+    public GridElement getElement(int x, int y) {
         return grid[y][x];
     }
+
+    @Override
+    public int getWidth() {
+        return grid[0].length;
+    }
+    @Override
+    public int getHeight() {
+        return grid.length;
+    }
+
 
 }

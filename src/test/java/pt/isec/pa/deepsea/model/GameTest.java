@@ -1,6 +1,7 @@
 package pt.isec.pa.deepsea.model;
 
 import org.junit.jupiter.api.Test;
+import pt.isec.pa.deepsea.model.data.GameData;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -8,7 +9,7 @@ class GameTest {
 
     @Test
     void getDronesSortedByFuel() {
-        Game game = new Game();
+        GameData game = new GameData();
         var dronesByFuel = game.getDronesSortedByFuel();
         assertNotNull(dronesByFuel);
         assertEquals(3, dronesByFuel.size(), "There should be 3 drones.");
@@ -18,7 +19,7 @@ class GameTest {
 
     @Test
     void getDronesSortedByHullIntegrity() {
-        Game game = new Game();
+        GameData game = new GameData();
         var dronesByHull = game.getDronesSortedByHullIntegrity();
         assertNotNull(dronesByHull);
         assertEquals(3, dronesByHull.size(), "There should be 3 drones.");

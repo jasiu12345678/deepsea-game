@@ -1,4 +1,4 @@
-# Package: [Insert Package Name Here]
+# Package: [state]
 
 **Student Instructions:**
 Please delete this text and replace it with a brief description of this package.
