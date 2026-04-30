@@ -2,11 +2,13 @@ package pt.isec.pa.deepsea.model;
 
 import pt.isec.pa.deepsea.model.data.GameData;
 
-public class Context {
+import java.io.Serializable;
+
+public class Context implements Serializable {
     private IState currentState;
     private final GameData data;
 
-    public Context(GameData data) {
+    Context(GameData data) {
         this.data = data;
         currentState = State.SURFACE.getInstance(this, data);
         currentState.entry();
@@ -15,12 +17,18 @@ public class Context {
 
     public State getState() { return currentState.getState(); }
 
+    GameData getGameData() {
+        return data;
+    }
+
     void changeState(IState newState) {
         currentState.exit();
         this.currentState = newState;
         currentState.entry();
         Log.getInstance().addLog("changed state to: " + newState.getState());
     }
+
+
 
     public boolean navigate(Directions dir) { return currentState.navigate(dir); }
     public boolean openWorkshop() { return currentState.openWorkshop(); }

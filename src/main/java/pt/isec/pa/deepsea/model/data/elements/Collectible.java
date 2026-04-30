@@ -12,6 +12,4 @@ public abstract class Collectible extends GridElement {
 
     public abstract ElementType onInteract(Drone drone);
 
-    public void onMiniGameWon(Drone drone) {
-    }
 }

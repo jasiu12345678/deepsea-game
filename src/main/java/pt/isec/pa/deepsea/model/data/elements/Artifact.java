@@ -16,9 +16,4 @@ public class Artifact extends Collectible {
     @Override
     public ElementType getType() {return ElementType.ARTIFACT;}
 
-    @Override
-    public void onMiniGameWon(Drone drone) {
-        if (drone != null)
-            drone.addToInventory(this);
-    }
 }

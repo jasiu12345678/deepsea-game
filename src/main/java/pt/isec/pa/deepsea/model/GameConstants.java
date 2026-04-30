@@ -14,6 +14,8 @@ public final class GameConstants {
     public static final int DRONE_MAX_FUEL = 150;
     public static final int DRONE_MAX_QUANTITY = 3;
     public static final int DRONE_MAX_HULL = 100;
+    public static final int DRONE_FUEL_CONSUMPTION = 1;
+    public static final String LOG_FILENAME = "logs.txt";
 
     public static final int SURFACE_WIDTH = 30;
     public static final int SURFACE_HEIGHT = 15;

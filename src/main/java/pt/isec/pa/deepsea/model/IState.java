@@ -1,6 +1,8 @@
 package pt.isec.pa.deepsea.model;
 
-public interface IState {
+import java.io.Serializable;
+
+public interface IState extends Serializable {
     boolean navigate(Directions dir);
     boolean openWorkshop();
     boolean closeWorkshop();

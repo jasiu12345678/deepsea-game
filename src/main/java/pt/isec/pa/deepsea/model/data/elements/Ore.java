@@ -11,10 +11,6 @@ public class Ore extends Collectible {
         this.quantity = quantity;
     }
 
-    public int getQuantity() {
-        return quantity;
-    }
-
     @Override
     public ElementType onInteract(Drone drone) {
         if (drone == null)

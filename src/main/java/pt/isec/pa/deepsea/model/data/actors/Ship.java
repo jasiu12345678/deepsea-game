@@ -122,7 +122,8 @@ public class Ship implements Serializable {
     public void transferInventoryFrom(Drone drone) {
         if (drone != null && drone.getTransportedResources() != null) {
             shipInventory.addAll(drone.getTransportedResources());
+            drone.resetFuelConsumption();
+            drone.clearInventory();
         }
     }
-
 }

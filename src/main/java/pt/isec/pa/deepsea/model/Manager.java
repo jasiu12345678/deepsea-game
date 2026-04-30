@@ -1,8 +1,10 @@
 package pt.isec.pa.deepsea.model;
 
+import pt.isec.pa.deepsea.model.data.DroneInfo;
 import pt.isec.pa.deepsea.model.data.GameData;
 
 import java.io.*;
+import java.util.List;
 
 public class Manager {
     private GameData data;
@@ -13,76 +15,67 @@ public class Manager {
         this.context = new Context(data);
     }
 
-    public void navigate(Directions dir) { context.navigate(dir); }
-    public void startDescent() { context.startDescent(); }
-    public void startAscent() {context.startAscent();}
-    public void openWorkshop() { context.openWorkshop(); }
-    public void closeWorkshop() { context.closeWorkshop(); }
-    public void collectItem() { context.collectItem(); }
-    public void resolveMiniGame(boolean won) { context.resolveMiniGame(won); }
-    public void repairDrone(int id) { context.repairDrone(id); }
-    public void refuelDrone(int id) { context.refuelDrone(id); }
-    public void upgradeDrone(int id) { context.upgradeDrone(id); }
-    public void selectDrone(int id) { context.selectDrone(id); }
+    public boolean navigate(Directions dir) { return context.navigate(dir); }
+    public boolean startDescent() { return context.startDescent(); }
+    public boolean startAscent() { return context.startAscent(); }
+    public boolean openWorkshop() { return context.openWorkshop(); }
+    public boolean closeWorkshop() { return context.closeWorkshop(); }
+    public boolean collectItem() { return context.collectItem(); }
+    public boolean resolveMiniGame(boolean won) { return context.resolveMiniGame(won); }
+    public boolean repairDrone(int id) { return context.repairDrone(id); }
+    public boolean refuelDrone(int id) { return context.refuelDrone(id); }
+    public boolean upgradeDrone(int id) { return context.upgradeDrone(id); }
+    public boolean selectDrone(int id) { return context.selectDrone(id); }
 
-    public State getCurrentState() { return context.getState(); }
-    public int getShipFuel() { return data.getShip().getCurrentFuel(); }
-    public int getShipX() { return data.getShip().getX(); }
-    public int getShipY() { return data.getShip().getY(); }
-    public int getArtifactCount() { return data.getShip().getArtifactCount(); }
-    public int getOreCount() { return data.getShip().getOreQuantity(); }
-    public boolean hasActiveDrone() { return data.getShip().getActiveDrone() != null; }
+    public int getShipFuel() { return data.getShipFuel(); }
+    public int getShipX() { return data.getShipX(); }
+    public int getShipY() { return data.getShipY(); }
+    public int getArtifactCount() { return data.getArtifactCount(); }
+    public int getOreCount() { return data.getOreCount(); }
 
     public int getActiveDroneHP() {
-        var drone = data.getShip().getActiveDrone();
-        if (drone == null) {
-            return 0;
-        }
-        return drone.getHP();
+        return data.getActiveDroneHP();
     }
+
     public int getActiveDroneMaxHP() {
-        var drone = data.getShip().getActiveDrone();
-        if (drone == null) {
-            return 0;
-        }
-        return drone.getMaxHP();
+        return data.getActiveDroneMaxHP();
     }
+
     public int getActiveDroneFuel() {
-        var drone = data.getShip().getActiveDrone();
-        if (drone == null) {
-            return 0;
-        }
-        return drone.getFuel();
+        return data.getActiveDroneFuel();
     }
+
     public int getActiveDroneMaxFuel() {
-        var drone = data.getShip().getActiveDrone();
-        if (drone == null) {
-            return 0;
-        }
-        return drone.getMaxFuel();
+        return data.getActiveDroneMaxFuel();
     }
+
     public String getActiveDroneName() {
-        var drone = data.getShip().getActiveDrone();
-        if (drone == null) {
-            return "null";
-        }
-        return "Drone#" + drone.getId();
+        return data.getActiveDroneName();
     }
+
     public String getCurrentStateName() {
         return context.getState().toString();
     }
 
+    public List<DroneInfo> getDronesSortedByFuel() {
+        return data.getDronesSortedByFuel();
+    }
+
+    public List<DroneInfo> getDronesSortedByHull() {
+        return data.getDronesSortedByHullIntegrity();
+    }
+
     public boolean save(String filename) {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
-            oos.writeObject(data);
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filename))) {
+            out.writeObject(context);
             return true;
         } catch (IOException e) { return false; }
     }
 
     public boolean load(String filename) {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename))) {
-            this.data = (GameData) ois.readObject();
-            this.context = new Context(data);
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filename))) {
+            this.context = (Context) in.readObject();
+            this.data = context.getGameData();
             return true;
         } catch (Exception e) { return false; }
     }

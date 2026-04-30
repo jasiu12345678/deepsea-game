@@ -2,7 +2,6 @@ package pt.isec.pa.deepsea.model.state;
 
 import pt.isec.pa.deepsea.model.*;
 import pt.isec.pa.deepsea.model.data.GameData;
-import pt.isec.pa.deepsea.model.data.actors.Drone;
 
 public class SurfaceState extends Adapter {
 
@@ -32,11 +31,10 @@ public class SurfaceState extends Adapter {
 
     @Override
     public boolean startDescent() {
-        Drone drone = data.getShip().getActiveDrone();
-        if (drone == null) return false;
-        drone.resetHitCount();
-        drone.setPosition(GameConstants.TRENCH_WIDTH / 2, 0);
-        changeState(State.TRENCH);
-        return true;
+        if (data.prepareDroneForDescent()) {
+            changeState(State.TRENCH);
+            return true;
+        }
+        return false;
     }
 }

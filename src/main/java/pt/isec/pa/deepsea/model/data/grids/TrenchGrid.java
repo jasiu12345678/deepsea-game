@@ -54,7 +54,9 @@ public class TrenchGrid implements Serializable, IGrid {
             for (int x = 0; x < GameConstants.TRENCH_WIDTH; x++) {
 
                 if (grid[y][x] != null) continue;
-                if (y == 0 && x == GameConstants.TRENCH_WIDTH / 2) continue;
+                if (y == 0 && x == GameConstants.TRENCH_WIDTH/2 ||
+                        y == 0 && x == GameConstants.TRENCH_WIDTH/2-1 ||
+                        y == 0 && x == GameConstants.TRENCH_WIDTH/2 +1) continue;
 
                 double roll = rand.nextDouble();
 

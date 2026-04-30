@@ -5,7 +5,6 @@ import pt.isec.pa.deepsea.model.data.elements.Collectible;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class Drone implements Serializable {
@@ -30,25 +29,10 @@ public class Drone implements Serializable {
         this.currentHull = maxHull;
         this.transportedResources = new ArrayList<>();
         this.id = nextId++;
-        this.currentFuelConsumption = 1;
+        this.currentFuelConsumption = GameConstants.DRONE_FUEL_CONSUMPTION;
         this.x = 0;
         this.y = 0;
         this.hitCount = 0;
-    }
-
-
-    public static class SortByFuel implements Comparator<Drone> {
-        @Override
-        public int compare(Drone a, Drone b) {
-            return Integer.compare(b.currentFuel, a.currentFuel);
-        }
-    }
-
-    public static class SortByHullIntegrity implements Comparator<Drone> {
-        @Override
-        public int compare(Drone a, Drone b) {
-            return Integer.compare(b.currentHull, a.currentHull);
-        }
     }
 
     @Override
@@ -83,27 +67,24 @@ public class Drone implements Serializable {
         return currentHull;
     }
     public int getMaxHP() {return maxHull;}
-    public int getCurrentHull() {return currentHull;}
     public int getFuel() {return currentFuel;}
     public int getCurrentFuelConsumption() {return currentFuelConsumption;}
     public int getX() {return x;}
     public int getY() {return y;}
     public void resetHitCount() {hitCount = 0;}
+    public static void resetIdCounter() {nextId = 1;}
 
     public List<Collectible> getTransportedResources() {
         return new ArrayList<>(transportedResources);
-    }
-
-    public void move(int dx, int dy, int fuelCost) {
-        this.x += dx;
-        this.y += dy;
-        consumeFuel(fuelCost);
     }
 
     public void consumeFuel(int amount) {
         if (amount > 0) {
             currentFuel = Math.max(0, currentFuel - amount);
         }
+    }
+    public void resetFuelConsumption() {
+        currentFuelConsumption = GameConstants.DRONE_FUEL_CONSUMPTION;
     }
 
     public void takeDamage() {
@@ -143,5 +124,13 @@ public class Drone implements Serializable {
     public void setPosition(int nx, int ny) {
         x = nx;
         y = ny;
+    }
+
+    public boolean isAlive() {
+        return (currentFuel > 0 && currentHull > 0);
+    }
+
+    public void clearInventory() {
+        transportedResources.clear();
     }
 }

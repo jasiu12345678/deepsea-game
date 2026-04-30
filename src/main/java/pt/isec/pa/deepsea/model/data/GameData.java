@@ -10,7 +10,6 @@ import pt.isec.pa.deepsea.model.data.elements.ElementType;
 import pt.isec.pa.deepsea.model.data.elements.GridElement;
 import pt.isec.pa.deepsea.model.data.grids.IGrid;
 import pt.isec.pa.deepsea.model.data.grids.SeabedGrid;
-import pt.isec.pa.deepsea.model.data.grids.SurfaceCell;
 import pt.isec.pa.deepsea.model.data.grids.SurfaceGrid;
 
 import java.io.Serializable;
@@ -29,10 +28,49 @@ public class GameData implements Serializable {
         this.map = new SurfaceGrid();
     }
 
-    public Ship getShip() { return ship; }
-    public SurfaceGrid getMap() { return map; }
-    public Collectible getPendingCollectible() { return pendingCollectible; }
-    public void setPendingCollectible(Collectible pending) { this.pendingCollectible = pending; }
+    // GETTERS FOR UI
+    public int getShipFuel() { return ship.getCurrentFuel(); }
+    public int getShipX() { return ship.getX(); }
+    public int getShipY() { return ship.getY(); }
+    public int getArtifactCount() { return ship.getArtifactCount(); }
+    public int getOreCount() { return ship.getOreQuantity(); }
+    public int getActiveDroneHP() {
+        var drone = ship.getActiveDrone();
+        if (drone == null) {
+            return 0;
+        }
+        return drone.getHP();
+    }
+    public int getActiveDroneMaxHP() {
+        var drone = ship.getActiveDrone();
+        if (drone == null) {
+            return 0;
+        }
+        return drone.getMaxHP();
+    }
+    public int getActiveDroneFuel() {
+        var drone = ship.getActiveDrone();
+        if (drone == null) {
+            return 0;
+        }
+        return drone.getFuel();
+    }
+    public int getActiveDroneMaxFuel() {
+        var drone = ship.getActiveDrone();
+        if (drone == null) {
+            return 0;
+        }
+        return drone.getMaxFuel();
+    }
+    public String getActiveDroneName() {
+        var drone = ship.getActiveDrone();
+        if (drone == null) {
+            return "null";
+        }
+        return "Drone#" + drone.getId();
+    }
+
+    // methods
 
     public boolean moveShip(Directions dir) {
         int nX = ship.getX();
@@ -82,6 +120,7 @@ public class GameData implements Serializable {
                 case MONSTER, MARINE_ANIMAL -> {
                     drone.takeDamage();
                     Log.getInstance().addLog("Ouch! That's a hostile."); }
+                case ORE,ARTIFACT -> {}
                 default -> {}
             }
         }
@@ -108,13 +147,26 @@ public class GameData implements Serializable {
         return false;
     }
 
+    public boolean moveDroneInTrench(Directions dir) {
+        var cell = map.getCell(ship.getX(), ship.getY());
+        return moveDrone(dir, cell.getTrench());
+    }
+
+    public boolean moveDroneInSeabed(Directions dir) {
+        var cell = map.getCell(ship.getX(), ship.getY());
+        return moveDrone(dir, cell.getSeabed());
+    }
+
     public void handleDroneLoss() {
         Drone drone = ship.getActiveDrone();
         if (drone != null) {
             Log.getInstance().addLog("Drone is dead!");
-            if (drone.getTransportedResources() != null) {
-                SurfaceCell cell = map.getCell(ship.getX(), ship.getY());
-                cell.getSeabed().dropLoot(drone.getTransportedResources());
+            var loot = drone.getTransportedResources();
+            if (loot != null && !loot.isEmpty()) {
+                var cell = map.getCell(ship.getX(), ship.getY());
+                if (cell != null) {
+                    cell.getSeabed().dropLoot(loot);
+                }
             }
             ship.removeActiveDrone();
         }
@@ -167,28 +219,78 @@ public class GameData implements Serializable {
         }
         var drone = ship.getActiveDrone();
         if (drone == null) return false;
-        pendingCollectible.onMiniGameWon(drone);
+        drone.addToInventory(pendingCollectible);
         var cell = map.getCell(ship.getX(), ship.getY());
         if (cell != null) {
             cell.getSeabed().removeElementAt(drone.getX(), drone.getY());
         }
-
         pendingCollectible = null;
         return true;
     }
 
-    public List<Drone> getDronesSortedByFuel() {
-        List<Drone> dronesSortedByFuel = new ArrayList<>(getShip().getAvailableDrones());
-        dronesSortedByFuel.sort(new Drone.SortByFuel());
-        return Collections.unmodifiableList(dronesSortedByFuel);
+    public boolean prepareDroneForDescent() {
+        Drone drone = ship.getActiveDrone();
+        if (drone !=null && drone.isAlive()) {
+            drone.resetHitCount();
+            drone.setPosition(GameConstants.TRENCH_WIDTH/2, 0);
+            return true;
+        }
+        return false;
+    }
+    public boolean prepareDroneForAscent() {
+        Drone drone = ship.getActiveDrone();
+        if (drone != null && drone.isAlive()) {
+            drone.setPosition(GameConstants.TRENCH_WIDTH/2, GameConstants.TRENCH_HEIGHT-1);
+            return true;
+        }
+        return false;
+    }
+    public boolean prepareDroneForSeabed() {
+        Drone drone = ship.getActiveDrone();
+        if ((drone != null) && drone.isAlive()) {
+            drone.setPosition(GameConstants.SEABED_WIDTH/2, 0);
+            return true;
+        }
+        return false;
     }
 
-    public List<Drone> getDronesSortedByHullIntegrity() {
-        List<Drone> dronesSortedByHull = new ArrayList<>(getShip().getAvailableDrones());
-        dronesSortedByHull.sort(new Drone.SortByHullIntegrity());
-        return Collections.unmodifiableList(dronesSortedByHull);
+    public boolean isDroneAtTrenchBottom() {
+        Drone drone = ship.getActiveDrone();
+        return drone != null && drone.getY() >= GameConstants.TRENCH_HEIGHT - 1;
+    }
+    public boolean isDroneAtTrenchTop() {
+        Drone drone = ship.getActiveDrone();
+        return drone != null && drone.getY() <= 0;
+    }
+    public boolean hasActiveDrone() {
+        return ship.getActiveDrone() != null;
+    }
+    public boolean handleDroneComeback() {
+        var drone = ship.getActiveDrone();
+        if (drone != null) {
+            ship.transferInventoryFrom(drone);
+            return true;
+        }
+        return false;
     }
 
+    public List<DroneInfo> getDronesSortedByFuel() {
+        List<DroneInfo> info = new ArrayList<>();
+        for (Drone d : ship.getAvailableDrones()) {
+            info.add(new DroneInfo(d.getId(), d.getHP(), d.getMaxHP(), d.getFuel(), d.getMaxFuel()));
+        }
+        info.sort(new DroneInfo.SortByFuel());
+        return Collections.unmodifiableList(info);
+    }
+
+    public List<DroneInfo> getDronesSortedByHullIntegrity() {
+        List<DroneInfo> info = new ArrayList<>();
+        for (Drone d : ship.getAvailableDrones()) {
+            info.add(new DroneInfo(d.getId(), d.getHP(), d.getMaxHP(), d.getFuel(), d.getMaxFuel()));
+        }
+        info.sort(new DroneInfo.SortByHullIntegrity());
+        return Collections.unmodifiableList(info);
+    }
     public boolean checkWinCondition() { return ship.getArtifactCount() >= GameConstants.TOTAL_ARTIFACTS; }
     public boolean checkLossCondition() { return ship.getCurrentFuel() <= 0 || ship.getAvailableDrones().isEmpty(); }
 }

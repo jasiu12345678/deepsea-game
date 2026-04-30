@@ -18,7 +18,6 @@ public class SeabedGrid implements Serializable, IGrid {
         if (GameConstants.PRESENTATION_MODE) {
             generateSeabed(isCentralForPresentation);
         } else {
-            generateArtifact();
             populate();
         }
     }
@@ -60,13 +59,6 @@ public class SeabedGrid implements Serializable, IGrid {
         return revealed[y * getWidth() + x];
     }
 
-    private void generateArtifact() {
-        Random rand = new Random();
-        int x = rand.nextInt(getWidth());
-        int y = rand.nextInt(getHeight());
-        grid[y][x] = new Artifact();
-    }
-
     private void populate() {
         Random rand = new Random();
         for (int y = 0; y < getHeight(); y++) {
@@ -77,6 +69,8 @@ public class SeabedGrid implements Serializable, IGrid {
                     grid[y][x] = new Monster();
                 } else if (roll < 0.25) {
                     grid[y][x] = new Ore(25);
+                } else if (roll < 0.25) {
+                    grid[y][x] = new Artifact();
                 }
             }
         }
@@ -97,16 +91,6 @@ public class SeabedGrid implements Serializable, IGrid {
     public void activateZone() {
     }
 
-    public Collectible getCollectibleById(int id) {
-        for (int y = 0; y < grid.length; y++) {
-            for (int x = 0; x < grid[y].length; x++) {
-                GridElement element = grid[y][x];
-                if (element != null && element.getId() == id && element instanceof Collectible collectible)
-                    return collectible;
-            }
-        }
-        return null;
-    }
 
     public boolean removeElementAt(int x, int y) {
         if (!isOutOfBounds(x,y)) {
