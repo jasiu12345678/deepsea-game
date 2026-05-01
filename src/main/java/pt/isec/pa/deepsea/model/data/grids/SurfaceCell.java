@@ -1,6 +1,9 @@
 package pt.isec.pa.deepsea.model.data.grids;
 
-public class SurfaceCell {
+import java.io.Serializable;
+
+public class SurfaceCell implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final TrenchGrid trench;
     private final SeabedGrid seabed;
 

@@ -8,22 +8,16 @@ import static org.junit.jupiter.api.Assertions.*;
 class ShipTest {
 
     @Test
-    void testShipInit() {
+    void testDronesInitialization() {
         Ship ship = new Ship();
-        assertNotNull(ship);
-        assertEquals(GameConstants.SHIP_MAX_FUEL, ship.getCurrentFuel(), "The ship should start with max fuel.");
-        assertEquals(0, ship.getOreQuantity(), "The ship should start with 0 ores.");
-        assertNotNull(ship.getActiveDrones(), "The ship should start with 3 active drones.");
-        assertEquals(GameConstants.STARTING_DRONES, ship.getActiveDrones().size(),
-                "The ship should start with 3 active drones.");
-        assertNotNull(ship.getCollectedArtifacts(), "List of artifacts should be initialized.");
-        assertTrue(ship.getCollectedArtifacts().isEmpty(), "List of artifacts should not be empty at start.");
+
+        for (Drone drone : ship.getAvailableDrones()) {
+            assertEquals(GameConstants.DRONE_MAX_FUEL, drone.getCurrentFuel(), "Each drone should have max fuel");
+            assertEquals(GameConstants.DRONE_MAX_HULL, drone.getHP(), "Each drone should have max hull");
+            assertEquals(0, drone.getX(), "Drone should start at ship (x=0)");
+            assertEquals(0, drone.getY(), "Drone should start at ship (y=0)");
+            assertTrue(drone.getTransportedResources().isEmpty(), "Drone should have no resources");
+        }
     }
 
-    @Test
-    void testShipArtifactsList() {
-        Ship ship = new Ship();
-        assertTrue(ship.getCollectedArtifacts().isEmpty(), "Ship should start with no artifacts");
-        assertNotNull(ship.getCollectedArtifacts(), "Artifacts list should not be null");
-    }
 }

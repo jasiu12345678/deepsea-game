@@ -2,9 +2,14 @@ package pt.isec.pa.deepsea.model.data.grids;
 
 import pt.isec.pa.deepsea.model.GameConstants;
 
-public class SurfaceGrid {
+import java.io.Serializable;
+
+public class SurfaceGrid implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final SurfaceCell[][] surface;
 
+    // initializing surface grid with surfacecell, which holds the trench and seabed grids
+    // so i dont have to make many independent grids.
     public SurfaceGrid() {
         this.surface = new SurfaceCell[GameConstants.SURFACE_HEIGHT][GameConstants.SURFACE_WIDTH];
         for (int y = 0; y < GameConstants.SURFACE_HEIGHT; y++) {
@@ -17,9 +22,19 @@ public class SurfaceGrid {
     }
 
     public SurfaceCell getCell(int x, int y) {
-        if (x < 0 || x >= GameConstants.SURFACE_WIDTH || y < 0 || y >= GameConstants.SURFACE_HEIGHT) {
+        if (isOutOfBounds(x,y)) {
             return null;
         }
         return surface[y][x];
+    }
+
+    public int getWidth() {
+        return surface[0].length;
+    }
+    public int getHeight() {
+        return surface.length;
+    }
+    public boolean isOutOfBounds(int x, int y) {
+        return x < 0 || x >= getWidth() || y < 0 || y >= getHeight();
     }
 }
