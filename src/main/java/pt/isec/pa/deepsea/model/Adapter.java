@@ -71,6 +71,10 @@ public abstract class Adapter implements IState {
     public boolean resolveMiniGame(boolean won) {
         return false;
     }
+    @Override
+    public boolean confirmCollection(boolean confirm) {
+        return false;
+    }
 
     @Override
     public void entry() {

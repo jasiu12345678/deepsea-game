@@ -3,7 +3,7 @@ package pt.isec.pa.deepsea.model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pt.isec.pa.deepsea.model.data.GameData;
-import pt.isec.pa.deepsea.model.data.actors.Drone;
+import pt.isec.pa.deepsea.model.data.Drone;
 
 import static org.junit.jupiter.api.Assertions.*;
 

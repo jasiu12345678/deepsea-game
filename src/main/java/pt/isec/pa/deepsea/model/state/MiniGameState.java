@@ -13,10 +13,10 @@ public class MiniGameState extends Adapter {
 
     @Override
     public boolean resolveMiniGame(boolean won) {
-        boolean processed = data.resolveMiniGame(won);
+        boolean processed = data.resolvePending(won);
         if (processed) {
             if (won) {
-                Log.getInstance().addLog("Artifact collected succesfully.");
+                Log.getInstance().addLog("Minigame won!");
                 changeState(State.SEABED);
             } else {
                 Log.getInstance().addLog("MiniGame lost - ascending");

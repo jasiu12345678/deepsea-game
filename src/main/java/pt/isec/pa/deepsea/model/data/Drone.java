@@ -1,7 +1,8 @@
-package pt.isec.pa.deepsea.model.data.actors;
+package pt.isec.pa.deepsea.model.data;
 
+import pt.isec.pa.deepsea.model.Directions;
 import pt.isec.pa.deepsea.model.GameConstants;
-import pt.isec.pa.deepsea.model.data.elements.Collectible;
+import pt.isec.pa.deepsea.model.Log;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ public class Drone implements Serializable {
     private final int maxFuel;
     private int currentHull;
     private int maxHull;
+    private int fuelMultiplier;
     private static int nextId = 1;
     private final int id;
     private int x;
@@ -33,6 +35,7 @@ public class Drone implements Serializable {
         this.x = 0;
         this.y = 0;
         this.hitCount = 0;
+        this.fuelMultiplier = 1;
     }
 
     @Override
@@ -83,6 +86,45 @@ public class Drone implements Serializable {
             currentFuel = Math.max(0, currentFuel - amount);
         }
     }
+
+    public boolean move(Directions dir, IGrid grid) {
+        int nX = x;
+        int nY = y;
+        switch (dir) {
+            case UP -> nY--;
+            case DOWN -> nY++;
+            case LEFT -> nX--;
+            case RIGHT -> nX++;
+        }
+
+        resetFuelMultiplier();
+        boolean blocksMovement = grid.processInteraction(nX, nY, this);
+        int cost = currentFuelConsumption * (fuelMultiplier);
+        if (currentHull <= 0) {
+            Log.getInstance().addLog("Drone lost all HP");
+            return false;
+        }
+        if (currentFuel < cost) {
+            Log.getInstance().addLog("Drone ran out of fuel!");
+            return false;
+        }
+        if (!blocksMovement) {
+            consumeFuel(cost);
+            setPosition(nX, nY);
+            return true;
+        }
+
+        return false;
+    }
+
+    public void fuelMultuplier(int multiplier) {
+        this.fuelMultiplier = multiplier;
+    }
+
+    public void resetFuelMultiplier() {
+        this.fuelMultiplier = 1;
+    }
+
     public void resetFuelConsumption() {
         currentFuelConsumption = GameConstants.DRONE_FUEL_CONSUMPTION;
     }
@@ -115,6 +157,7 @@ public class Drone implements Serializable {
         if (quantity > 0)
             currentFuelConsumption += quantity;
     }
+
 
     public void addToInventory(Collectible item) {
         if (item != null)

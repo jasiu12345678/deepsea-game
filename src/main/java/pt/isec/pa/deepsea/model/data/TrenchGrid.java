@@ -1,7 +1,7 @@
-package pt.isec.pa.deepsea.model.data.grids;
+package pt.isec.pa.deepsea.model.data;
 
 import pt.isec.pa.deepsea.model.GameConstants;
-import pt.isec.pa.deepsea.model.data.elements.*;
+
 import java.io.Serializable;
 import java.util.Random;
 
@@ -15,6 +15,22 @@ public class TrenchGrid implements Serializable, IGrid {
         populate();
     }
 
+    @Override
+    public boolean processInteraction(int x, int y, Drone drone) {
+        if (isOutOfBounds(x, y)) {
+            return true;
+        }
+        GridElement element = grid[y][x];
+        if (element != null) {
+            return element.interact(drone);
+        }
+        return false;
+    }
+
+    @Override
+    public Collectible processCollection(int x, int y, Drone drone) {
+        return null;
+    }
     private void generateRocks() {
         if (GameConstants.PRESENTATION_MODE) {
             for (int y = 0; y < GameConstants.TRENCH_HEIGHT; y++) {
@@ -71,11 +87,6 @@ public class TrenchGrid implements Serializable, IGrid {
     }
 
     @Override
-    public GridElement getElement(int x, int y) {
-        return grid[y][x];
-    }
-
-    @Override
     public int getWidth() {
         return grid[0].length;
     }
@@ -83,6 +94,7 @@ public class TrenchGrid implements Serializable, IGrid {
     public int getHeight() {
         return grid.length;
     }
-
+    @Override
+    public void removeElement(int x,int y) {};
 
 }

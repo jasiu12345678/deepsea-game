@@ -3,14 +3,6 @@ package pt.isec.pa.deepsea.model.data;
 import pt.isec.pa.deepsea.model.Directions;
 import pt.isec.pa.deepsea.model.GameConstants;
 import pt.isec.pa.deepsea.model.Log;
-import pt.isec.pa.deepsea.model.data.actors.Drone;
-import pt.isec.pa.deepsea.model.data.actors.Ship;
-import pt.isec.pa.deepsea.model.data.elements.Collectible;
-import pt.isec.pa.deepsea.model.data.elements.ElementType;
-import pt.isec.pa.deepsea.model.data.elements.GridElement;
-import pt.isec.pa.deepsea.model.data.grids.IGrid;
-import pt.isec.pa.deepsea.model.data.grids.SeabedGrid;
-import pt.isec.pa.deepsea.model.data.grids.SurfaceGrid;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -71,80 +63,19 @@ public class GameData implements Serializable {
     }
 
     // methods
-
+    public boolean setActiveDrone(int id) { return ship.setActiveDrone(id); }
     public boolean moveShip(Directions dir) {
-        int nX = ship.getX();
-        int nY = ship.getY();
-        switch (dir) {
-            case UP -> nY--;
-            case DOWN -> nY++;
-            case LEFT -> nX--;
-            case RIGHT -> nX++;
-        }
-        if (map.isOutOfBounds(nX, nY)) return false;
-        if (ship.getCurrentFuel() < GameConstants.SHIP_FUEL_CONSUMPTION) return false;
-
-        ship.consumeFuel(GameConstants.SHIP_FUEL_CONSUMPTION);
-        ship.setPosition(nX, nY);
-        Log.getInstance().addLog("Ship at: " + nX + "," + nY);
-        return true;
+        return ship.move(dir, map);
     }
 
     public boolean moveDrone(Directions dir, IGrid grid) {
         Drone drone = ship.getActiveDrone();
         if (drone == null) return false;
-
-        int nX = drone.getX();
-        int nY = drone.getY();
-        switch (dir) {
-            case UP -> nY--;
-            case DOWN -> nY++;
-            case LEFT -> nX--;
-            case RIGHT -> nX++;
-        }
-
-        if (grid.isOutOfBounds(nX, nY)) return false;
-
-        GridElement element = grid.getElement(nX, nY);
-        int cost = drone.getCurrentFuelConsumption();
-        boolean blocksMovement = false;
-
-        if (element != null) {
-            switch (element.getType()) {
-                case CURRENT -> cost *= 2;
-                case ROCK -> {
-                    blocksMovement = true;
-                    drone.takeDamage();
-                    Log.getInstance().addLog("Drone hit a rock!");
-                }
-                case MONSTER, MARINE_ANIMAL -> {
-                    drone.takeDamage();
-                    Log.getInstance().addLog("Ouch! That's a hostile."); }
-                case ORE,ARTIFACT -> {}
-                default -> {}
-            }
-        }
-
-        if (drone.getHP() <= 0 ) {
-            Log.getInstance().addLog("Drone lost all HP");
+        boolean moved = drone.move(dir, grid);
+        if (!drone.isAlive()) {
             handleDroneLoss();
-            return false;
         }
-        if (drone.getFuel() < cost) {
-            Log.getInstance().addLog("Drone ran out of fuel!");
-            handleDroneLoss();
-            return false;
-        }
-
-        if (!blocksMovement) {
-            drone.consumeFuel(cost);
-            drone.setPosition(nX, nY);
-            if (grid instanceof SeabedGrid seabed) {
-                seabed.revealAt(nX, nY);
-            }
-            return true;
-        }
-        return false;
+        return moved;
     }
 
     public boolean moveDroneInTrench(Directions dir) {
@@ -172,30 +103,21 @@ public class GameData implements Serializable {
         }
     }
 
-    public ElementType collectItem() {
+    public boolean collectItem() {
         var drone = ship.getActiveDrone();
-        if (drone == null) return ElementType.NONE;
+        if (drone == null) return false;
         var cell = map.getCell(ship.getX(), ship.getY());
-        var seabed = cell.getSeabed();
-        var element = seabed.getElement(drone.getX(), drone.getY());
-
-        if (!(element instanceof Collectible collectible)) {
-            return ElementType.NONE;
+        if (cell == null) return false;
+        Collectible collected = cell.getSeabed().processCollection(drone.getX(), drone.getY(), drone);
+        if (collected != null) {
+            this.pendingCollectible = collected;
+            return true;
         }
-
-        ElementType result = collectible.onInteract(drone);
-
-        if (result == ElementType.ORE) {
-            seabed.removeElementAt(drone.getX(), drone.getY());
-        } else if (result == ElementType.ARTIFACT) {
-            this.pendingCollectible = collectible;
-        }
-
-        return result;
+        return false;
     }
 
-    public boolean setActiveDrone(int id) {
-        return ship.setActiveDrone(id);
+    public boolean hasPendingCollectible() {
+        return pendingCollectible !=null;
     }
 
     public boolean repairDrone(int id) {
@@ -210,22 +132,24 @@ public class GameData implements Serializable {
         return ship.upgradeDrone(id);
     }
 
-    public boolean resolveMiniGame(boolean won) {
+    public boolean resolvePending(boolean confirmed) {
         if (pendingCollectible == null) return false;
-
-        if (!won) {
+        if (!confirmed) {
             pendingCollectible = null;
             return true;
         }
         var drone = ship.getActiveDrone();
         if (drone == null) return false;
-        drone.addToInventory(pendingCollectible);
         var cell = map.getCell(ship.getX(), ship.getY());
-        if (cell != null) {
-            cell.getSeabed().removeElementAt(drone.getX(), drone.getY());
-        }
+        if (cell == null) return false;
+
+        pendingCollectible.completeCollection(drone, cell.getSeabed());
         pendingCollectible = null;
         return true;
+    }
+
+    public boolean pendingRequiresMiniGame() {
+        return pendingCollectible != null && pendingCollectible.requiresMiniGame();
     }
 
     public boolean prepareDroneForDescent() {

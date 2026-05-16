@@ -1,6 +1,4 @@
-package pt.isec.pa.deepsea.model.data.elements;
-
-import pt.isec.pa.deepsea.model.data.actors.Drone;
+package pt.isec.pa.deepsea.model.data;
 
 public abstract class Collectible extends GridElement {
     private static final long serialVersionUID = 1L;
@@ -10,6 +8,8 @@ public abstract class Collectible extends GridElement {
         super(nextId++);
     }
 
-    public abstract ElementType onInteract(Drone drone);
+    public abstract void completeCollection(Drone drone, IGrid grid);
+
+    public abstract boolean requiresMiniGame();
 
 }

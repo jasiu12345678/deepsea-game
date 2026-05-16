@@ -4,8 +4,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pt.isec.pa.deepsea.model.GameConstants;
-import pt.isec.pa.deepsea.model.data.elements.Monster;
-import pt.isec.pa.deepsea.model.data.elements.Ore;
+import pt.isec.pa.deepsea.model.data.Monster;
+import pt.isec.pa.deepsea.model.data.Ore;
+import pt.isec.pa.deepsea.model.data.SeabedGrid;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class SeabedGridTest {
@@ -26,10 +28,8 @@ class SeabedGridTest {
 
         for (int y = 0; y < GameConstants.SEABED_HEIGHT; y++) {
             for (int x = 0; x < GameConstants.SEABED_WIDTH; x++) {
-                var element = seabed.getElement(x, y);
-                if (element != null) {
-                    assertFalse(element.isRevealed(), "Cell at " + x + "," + y + " should be hidden in normal mode");
-                }
+                boolean test = seabed.isRevealed(x, y);
+                    assertFalse(test, "Cell at " + x + "," + y + " should be hidden in normal mode");
             }
         }
     }
@@ -41,9 +41,10 @@ class SeabedGridTest {
 
         for (int y = 0; y < GameConstants.SEABED_HEIGHT; y++) {
             for (int x = 0; x < GameConstants.SEABED_WIDTH; x++) {
-                var element = seabed.getElement(x, y);
+                var element = seabed;
+                boolean test = element.isRevealed(x, y);
                 if (element != null) {
-                    assertTrue(element.isRevealed(), "Cell at " + x + "," + y + " should be revealed in presentation mode");
+                    assertTrue(test, "Cell at " + x + "," + y + " should be revealed in presentation mode");
                 }
             }
         }

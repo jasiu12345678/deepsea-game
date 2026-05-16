@@ -1,4 +1,4 @@
-package pt.isec.pa.deepsea.model.data.grids;
+package pt.isec.pa.deepsea.model.data;
 
 import pt.isec.pa.deepsea.model.GameConstants;
 

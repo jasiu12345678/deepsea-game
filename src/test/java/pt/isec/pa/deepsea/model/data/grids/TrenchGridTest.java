@@ -4,7 +4,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pt.isec.pa.deepsea.model.GameConstants;
-import pt.isec.pa.deepsea.model.data.elements.Rock;
+import pt.isec.pa.deepsea.model.data.Rock;
+import pt.isec.pa.deepsea.model.data.TrenchGrid;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -26,6 +26,7 @@ public class Manager {
     public boolean refuelDrone(int id) { return context.refuelDrone(id); }
     public boolean upgradeDrone(int id) { return context.upgradeDrone(id); }
     public boolean selectDrone(int id) { return context.selectDrone(id); }
+    public boolean confirmCollection(boolean confirm) { return context.confirmCollection(confirm); }
 
     public int getShipFuel() { return data.getShipFuel(); }
     public int getShipX() { return data.getShipX(); }
@@ -79,5 +80,4 @@ public class Manager {
             return true;
         } catch (Exception e) { return false; }
     }
-
 }

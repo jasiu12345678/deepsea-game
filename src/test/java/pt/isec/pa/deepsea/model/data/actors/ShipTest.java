@@ -2,6 +2,8 @@ package pt.isec.pa.deepsea.model.data.actors;
 
 import org.junit.jupiter.api.Test;
 import pt.isec.pa.deepsea.model.GameConstants;
+import pt.isec.pa.deepsea.model.data.Drone;
+import pt.isec.pa.deepsea.model.data.Ship;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -1,8 +1,8 @@
-package pt.isec.pa.deepsea.model.data.actors;
+package pt.isec.pa.deepsea.model.data;
 
+import pt.isec.pa.deepsea.model.Directions;
 import pt.isec.pa.deepsea.model.GameConstants;
-import pt.isec.pa.deepsea.model.data.elements.Artifact;
-import pt.isec.pa.deepsea.model.data.elements.Collectible;
+import pt.isec.pa.deepsea.model.Log;
 
 import java.io.Serializable;
 import java.util.*;
@@ -49,6 +49,25 @@ public class Ship implements Serializable {
         if (amount > 0) {
             currentFuel = Math.max(0, currentFuel - amount);
         }
+    }
+
+    public boolean move(Directions dir, SurfaceGrid map) {
+        int nX = x;
+        int nY = y;
+        switch (dir) {
+            case UP -> nY--;
+            case DOWN -> nY++;
+            case LEFT -> nX--;
+            case RIGHT -> nX++;
+        }
+
+        if (map.isOutOfBounds(nX, nY)) return false;
+        if (currentFuel < GameConstants.SHIP_FUEL_CONSUMPTION) return false;
+
+        consumeFuel(GameConstants.SHIP_FUEL_CONSUMPTION);
+        setPosition(nX, nY);
+        Log.getInstance().addLog("Ship at: " + nX + "," + nY);
+        return true;
     }
 
     public void consumeOres(int quantity) {

@@ -28,8 +28,6 @@ public class Context implements Serializable {
         Log.getInstance().addLog("changed state to: " + newState.getState());
     }
 
-
-
     public boolean navigate(Directions dir) { return currentState.navigate(dir); }
     public boolean openWorkshop() { return currentState.openWorkshop(); }
     public boolean closeWorkshop() { return currentState.closeWorkshop(); }
@@ -41,5 +39,6 @@ public class Context implements Serializable {
     public boolean upgradeDrone(int id) { return currentState.upgradeDrone(id); }
     public boolean selectDrone(int id) { return currentState.selectDrone(id); }
     public boolean resolveMiniGame(boolean won) { return currentState.resolveMiniGame(won); }
+    public boolean confirmCollection(boolean confirm) {return currentState.confirmCollection(confirm);}
 
 }

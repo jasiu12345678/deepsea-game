@@ -2,7 +2,7 @@ package pt.isec.pa.deepsea.model.state;
 
 import pt.isec.pa.deepsea.model.*;
 import pt.isec.pa.deepsea.model.data.GameData;
-import pt.isec.pa.deepsea.model.data.elements.ElementType;
+import pt.isec.pa.deepsea.model.data.ElementType;
 
 public class SeabedState extends Adapter {
 
@@ -31,17 +31,28 @@ public class SeabedState extends Adapter {
 
     @Override
     public boolean collectItem() {
-        ElementType result = data.collectItem();
-        if (result == ElementType.ARTIFACT) {
-            Log.getInstance().addLog("Artifact found, finish the minigame to collect it!");
-            changeState(State.MINIGAME);
-            return true;
-        }
-        if (result == ElementType.ORE) {
-            Log.getInstance().addLog("Ore collected.");
+        if (data.collectItem()) {
+            if (data.hasPendingCollectible()) {
+                changeState(State.MINIGAME);
+            }
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean confirmCollection(boolean confirm) {
+        if (!data.hasPendingCollectible()) return false;
+        if (!confirm) {
+            data.resolvePending(false);
+            return true;
+        }
+        if (data.pendingRequiresMiniGame()) {
+            changeState(State.MINIGAME);
+        } else {
+            data.resolvePending(true);
+        }
+        return true;
     }
 
     @Override

@@ -35,7 +35,7 @@ public class TrenchState extends Adapter {
         if (dir == Directions.UP && data.isDroneAtTrenchTop()) {
             data.handleDroneComeback();
             if (data.checkWinCondition()) {
-                changeState(State.GAME_WON);
+                changeState(State.GAME_OVER);
                 Log.getInstance().addLog("All artifacts collected, YOU WIN!");
             } else {
                 changeState(State.SURFACE);

@@ -1,4 +1,4 @@
-package pt.isec.pa.deepsea.model.data.elements;
+package pt.isec.pa.deepsea.model.data;
 
 public abstract class Obstacle extends GridElement {
     private static final long serialVersionUID = 1L;
@@ -7,8 +7,5 @@ public abstract class Obstacle extends GridElement {
     public Obstacle() {
         super(nextId++);
     }
-
-    public abstract int damage();
-    public abstract int fuelMultiplier();
 
 }
