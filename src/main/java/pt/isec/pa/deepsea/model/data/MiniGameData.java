@@ -19,6 +19,7 @@ public class MiniGameData implements Serializable {
         this.grid = new int[GameConstants.MINIGAME_GRID_SIZE][GameConstants.MINIGAME_GRID_SIZE];
         this.movesCount = 0;
         initializeGrid();
+        shuffle(100);
     }
 
     private void initializeGrid() {

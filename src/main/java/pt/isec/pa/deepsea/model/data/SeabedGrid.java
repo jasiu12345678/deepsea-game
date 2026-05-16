@@ -59,18 +59,6 @@ public class SeabedGrid implements Serializable, IGrid {
         }
     }
 
-    public boolean hasArtifact() {
-        for (int y = 0; y < this.getHeight(); y++) {
-            for (int x = 0; x < this.getWidth(); x++) {
-                GridElement element = grid[y][x];
-                if (element != null && element.getType() == ElementType.ARTIFACT) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     private void populate() {
         Random rand = new Random();
         for (int y = 0; y < getHeight(); y++) {

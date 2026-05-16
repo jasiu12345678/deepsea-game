@@ -10,7 +10,7 @@ public enum State {
     SEABED,
     WORKSHOP,
     MINIGAME,
-    GAME_OVER,
+    GAME_OVER;
 
     public IState getInstance(Context context, GameData data) {
         return switch (this) {

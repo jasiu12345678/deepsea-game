@@ -2,7 +2,6 @@ package pt.isec.pa.deepsea.model.state;
 
 import pt.isec.pa.deepsea.model.*;
 import pt.isec.pa.deepsea.model.data.GameData;
-import pt.isec.pa.deepsea.model.data.ElementType;
 
 public class SeabedState extends Adapter {
 
