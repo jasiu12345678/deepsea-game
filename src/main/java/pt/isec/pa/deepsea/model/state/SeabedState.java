@@ -2,7 +2,6 @@ package pt.isec.pa.deepsea.model.state;
 
 import pt.isec.pa.deepsea.model.*;
 import pt.isec.pa.deepsea.model.data.GameData;
-import pt.isec.pa.deepsea.model.data.elements.ElementType;
 
 public class SeabedState extends Adapter {
 
@@ -17,8 +16,11 @@ public class SeabedState extends Adapter {
 
     @Override
     public boolean navigate(Directions dir) {
+        if (data.hasPendingCollectible()) {
+            return false;
+        }
         boolean moved = data.moveDroneInSeabed(dir);
-        if (!moved && !data.hasActiveDrone()) {
+        if (!data.hasActiveDrone()) {
             if (data.checkLossCondition()) {
                 changeState(State.GAME_OVER);
             } else {
@@ -31,17 +33,24 @@ public class SeabedState extends Adapter {
 
     @Override
     public boolean collectItem() {
-        ElementType result = data.collectItem();
-        if (result == ElementType.ARTIFACT) {
-            Log.getInstance().addLog("Artifact found, finish the minigame to collect it!");
+        return data.collectItem();
+    }
+
+    @Override
+    public boolean confirmCollection(boolean accept) {
+        if (!data.hasPendingCollectible()) {
+            return false;
+        }
+        if (!accept) {
+            data.resolvePending(false);
+            return true;
+        }
+        if (data.pendingRequiresMiniGame()) {
             changeState(State.MINIGAME);
-            return true;
+        } else {
+            data.resolvePending(true);
         }
-        if (result == ElementType.ORE) {
-            Log.getInstance().addLog("Ore collected.");
-            return true;
-        }
-        return false;
+        return true;
     }
 
     @Override

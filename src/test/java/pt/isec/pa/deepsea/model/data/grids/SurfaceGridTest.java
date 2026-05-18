@@ -2,6 +2,8 @@ package pt.isec.pa.deepsea.model.data.grids;
 
 import org.junit.jupiter.api.Test;
 import pt.isec.pa.deepsea.model.GameConstants;
+import pt.isec.pa.deepsea.model.data.SurfaceGrid;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class SurfaceGridTest {

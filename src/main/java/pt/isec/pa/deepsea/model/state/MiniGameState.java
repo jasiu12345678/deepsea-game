@@ -4,7 +4,11 @@ import pt.isec.pa.deepsea.model.*;
 import pt.isec.pa.deepsea.model.data.GameData;
 
 public class MiniGameState extends Adapter {
-    public MiniGameState(Context context, GameData data) {super(context, data);}
+
+    public MiniGameState(Context context, GameData data) {
+        super(context, data);
+        data.startMiniGame();
+    }
 
     @Override
     public State getState() {
@@ -12,19 +16,29 @@ public class MiniGameState extends Adapter {
     }
 
     @Override
-    public boolean resolveMiniGame(boolean won) {
-        boolean processed = data.resolveMiniGame(won);
-        if (processed) {
-            if (won) {
-                Log.getInstance().addLog("Artifact collected succesfully.");
-                changeState(State.SEABED);
-            } else {
-                Log.getInstance().addLog("MiniGame lost - ascending");
-                data.prepareDroneForAscent();
-                changeState(State.TRENCH);
+    public boolean navigate(Directions dir) {
+        boolean moved = data.movePuzzle(dir);
+        if (moved) {
+            if (data.isPuzzleSolved()) {
+                winMinigame();
+            } else if (data.getPuzzleMovesCount() >= GameConstants.MAX_PUZZLE_MOVES) {
+                loseMinigame();
             }
-            return true;
         }
-        return false;
+        return moved;
+    }
+
+    private void winMinigame() {
+        data.resolvePending(true);
+        changeState(State.SEABED);
+    }
+
+    private void loseMinigame() {
+        data.resolvePending(false);
+        if (data.prepareDroneForAscent()) {
+            changeState(State.TRENCH);
+        } else {
+            changeState(State.SURFACE);
+        }
     }
 }

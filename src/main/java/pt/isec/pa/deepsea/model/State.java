@@ -10,9 +10,7 @@ public enum State {
     SEABED,
     WORKSHOP,
     MINIGAME,
-    GAME_OVER,
-    GAME_WON;
-
+    GAME_OVER;
 
     public IState getInstance(Context context, GameData data) {
         return switch (this) {
@@ -22,7 +20,6 @@ public enum State {
             case WORKSHOP -> new WorkshopState(context, data);
             case MINIGAME -> new MiniGameState(context, data);
             case GAME_OVER -> new GameOverState(context, data);
-            case GAME_WON -> new GameWonState(context, data);
         };
     }
 }

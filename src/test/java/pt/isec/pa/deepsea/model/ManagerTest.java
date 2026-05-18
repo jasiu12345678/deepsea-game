@@ -4,7 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pt.isec.pa.deepsea.model.data.DroneInfo;
-import pt.isec.pa.deepsea.model.data.actors.Drone;
+import pt.isec.pa.deepsea.model.data.Drone;
 
 import java.io.File;
 
