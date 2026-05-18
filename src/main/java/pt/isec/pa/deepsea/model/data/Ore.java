@@ -12,20 +12,21 @@ public class Ore extends Collectible {
     }
 
     @Override
+    public void addToShip(Ship ship) {
+        ship.addOre(quantity);
+    }
+
+    @Override
     public boolean interact(Drone drone) {
-        if (drone != null) {
-            drone.addToInventory(this);
-            drone.increaseFuelConsumption(quantity);
-            return true;
-        }
         return false;
     }
 
     @Override
     public Collectible collect(Drone drone, IGrid grid) {
-        Log.getInstance().addLog("Colllecting an ore will increase fuel consumption");
+        Log.getInstance().addLog("Collecting an ore will increase fuel consumption.");
         return this;
     }
+
     @Override
     public void completeCollection(Drone drone, IGrid grid) {
         drone.addToInventory(this);
@@ -33,8 +34,14 @@ public class Ore extends Collectible {
         grid.removeElement(drone.getX(), drone.getY());
         Log.getInstance().addLog("Ore collected.");
     }
+
     @Override
     public boolean requiresMiniGame() {
         return false;
+    }
+
+    @Override
+    public String getImageName() {
+        return "ore.png";
     }
 }

@@ -138,9 +138,22 @@ public class Ship implements Serializable {
         drone.refuel(1);
         return true;
     }
+
+    public void addArtifact(Artifact artifact) {
+        collectedArtifacts.add(artifact);
+        Log.getInstance().addLog("Artifact added to ship!");
+    }
+
+    public void addOre(int quantity) {
+        oreQuantity += quantity;
+        Log.getInstance().addLog("Ore quantity increased by: " + quantity);
+    }
+
     public void transferInventoryFrom(Drone drone) {
         if (drone != null && drone.getTransportedResources() != null) {
-            shipInventory.addAll(drone.getTransportedResources());
+            for (Collectible item : drone.getTransportedResources()) {
+                item.addToShip(this);
+            }
             drone.resetFuelConsumption();
             drone.clearInventory();
         }

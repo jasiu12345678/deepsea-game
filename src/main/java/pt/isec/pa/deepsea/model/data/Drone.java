@@ -106,6 +106,7 @@ public class Drone implements Serializable {
         }
         if (currentFuel < cost) {
             Log.getInstance().addLog("Drone ran out of fuel!");
+            consumeFuel(currentFuel);
             return false;
         }
         if (!blocksMovement) {

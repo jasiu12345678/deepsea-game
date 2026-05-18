@@ -14,6 +14,7 @@ public class GameData implements Serializable {
     private final Ship ship;
     private final SurfaceGrid map;
     private Collectible pendingCollectible;
+    private MiniGameData minigame;
 
     public GameData() {
         this.ship = new Ship();
@@ -21,6 +22,16 @@ public class GameData implements Serializable {
     }
 
     // GETTERS FOR UI
+    public int getDroneX() {
+        var drone = ship.getActiveDrone();
+        return drone != null ? drone.getX() : -1;
+    }
+
+    public int getDroneY() {
+        var drone = ship.getActiveDrone();
+        return drone != null ? drone.getY() : -1;
+    }
+
     public int getShipFuel() { return ship.getCurrentFuel(); }
     public int getShipX() { return ship.getX(); }
     public int getShipY() { return ship.getY(); }
@@ -62,6 +73,24 @@ public class GameData implements Serializable {
         return "Drone#" + drone.getId();
     }
 
+    public boolean isSeabedRevealed(int x, int y) {
+        var cell = map.getCell(ship.getX(), ship.getY());
+        if (cell == null || cell.getSeabed() == null) return false;
+        return cell.getSeabed().isRevealed(x, y);
+    }
+
+    public String getSeabedElementImage(int x, int y) {
+        var cell = map.getCell(ship.getX(), ship.getY());
+        if (cell == null || cell.getSeabed() == null) return "water.png";
+        return cell.getSeabed().getElementImage(x, y);
+    }
+
+    public String getTrenchElementImage(int x, int y) {
+        var cell = map.getCell(ship.getX(), ship.getY());
+        if (cell == null || cell.getTrench() == null) return "water.png";
+        return cell.getTrench().getElementImage(x, y);
+    }
+
     // methods
     public boolean setActiveDrone(int id) { return ship.setActiveDrone(id); }
     public boolean moveShip(Directions dir) {
@@ -72,6 +101,9 @@ public class GameData implements Serializable {
         Drone drone = ship.getActiveDrone();
         if (drone == null) return false;
         boolean moved = drone.move(dir, grid);
+        if (moved && grid != null) {
+            grid.processInteraction(drone.getX(), drone.getY(), drone);
+        }
         if (!drone.isAlive()) {
             handleDroneLoss();
         }
@@ -107,13 +139,36 @@ public class GameData implements Serializable {
         var drone = ship.getActiveDrone();
         if (drone == null) return false;
         var cell = map.getCell(ship.getX(), ship.getY());
-        if (cell == null) return false;
+        if (cell == null || cell.getSeabed() == null) return false;
+
         Collectible collected = cell.getSeabed().processCollection(drone.getX(), drone.getY(), drone);
         if (collected != null) {
             this.pendingCollectible = collected;
             return true;
         }
         return false;
+    }
+    public void startMiniGame() {
+        this.minigame = new MiniGameData();
+    }
+
+    public boolean movePuzzle(Directions dir) {
+        if (minigame != null) {
+            return minigame.move(dir);
+        }
+        return false;
+    }
+
+    public boolean isPuzzleSolved() {
+        return minigame != null && minigame.checkWinCondition();
+    }
+
+    public int[][] getPuzzleGrid() {
+        return minigame != null ? minigame.getGrid() : null;
+    }
+
+    public int getPuzzleMovesCount() {
+        return minigame != null ? minigame.getMovesCount() : 0;
     }
 
     public boolean hasPendingCollectible() {
@@ -171,8 +226,13 @@ public class GameData implements Serializable {
     }
     public boolean prepareDroneForSeabed() {
         Drone drone = ship.getActiveDrone();
-        if ((drone != null) && drone.isAlive()) {
-            drone.setPosition(GameConstants.SEABED_WIDTH/2, 0);
+        if (drone != null && drone.isAlive()) {
+            drone.setPosition(GameConstants.SEABED_WIDTH / 2, GameConstants.SEABED_HEIGHT / 2);
+            var cell = map.getCell(ship.getX(), ship.getY());
+            if (cell != null && cell.getSeabed() != null) {
+                cell.getSeabed().removeElement(drone.getX(), drone.getY());
+                cell.getSeabed().processInteraction(drone.getX(), drone.getY(), drone);
+            }
             return true;
         }
         return false;

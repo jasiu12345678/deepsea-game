@@ -13,4 +13,9 @@ public class Water extends Obstacle{
 
     @Override
     public boolean isEmpty() {return true;}
+
+    @Override
+    public String getImageName() {
+        return "water.png";
+    }
 }

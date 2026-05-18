@@ -96,5 +96,11 @@ public class TrenchGrid implements Serializable, IGrid {
     }
     @Override
     public void removeElement(int x,int y) {};
-
+    @Override
+    public String getElementImage(int x, int y) {
+        if (isOutOfBounds(x, y)) return "water.png";
+        GridElement element = grid[y][x];
+        if (element == null) return "water.png";
+        return element.getImageName();
+    }
 }

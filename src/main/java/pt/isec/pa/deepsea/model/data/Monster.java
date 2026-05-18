@@ -13,4 +13,8 @@ public class Monster extends Obstacle {
         }
         return false;
     }
+    @Override
+    public String getImageName() {
+        return "monster.png";
+    }
 }

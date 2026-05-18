@@ -13,4 +13,8 @@ public class MarineAnimal extends Obstacle {
         }
         return false;
     }
+    @Override
+    public String getImageName() {
+        return "marineanimal.png";
+    }
 }

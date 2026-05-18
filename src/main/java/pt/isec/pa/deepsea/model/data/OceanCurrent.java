@@ -8,8 +8,12 @@ public class OceanCurrent extends Obstacle {
     public boolean interact(Drone drone) {
         if (drone != null) {
             drone.fuelMultuplier(2);
-            return true;
+            return false;
         }
         return false;
+    }
+    @Override
+    public String getImageName() {
+        return "current.png";
     }
 }

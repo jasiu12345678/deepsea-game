@@ -40,5 +40,6 @@ public class Context implements Serializable {
     public boolean selectDrone(int id) { return currentState.selectDrone(id); }
     public boolean resolveMiniGame(boolean won) { return currentState.resolveMiniGame(won); }
     public boolean confirmCollection(boolean confirm) {return currentState.confirmCollection(confirm);}
+    public boolean isAwaitingConfirmation() {return data.hasPendingCollectible();}
 
 }

@@ -12,7 +12,11 @@ public class Artifact extends Collectible {
     @Override
     public boolean interact(Drone drone) {
         return false;
-        // tutaj musze zrobic w srodku pending collectible zeby sie ustawial
+    }
+
+    @Override
+    public void addToShip(Ship ship) {
+        ship.addArtifact(this);
     }
 
     @Override
@@ -29,6 +33,10 @@ public class Artifact extends Collectible {
     @Override
     public boolean requiresMiniGame() {
         return true;
+    }
+    @Override
+    public String getImageName() {
+        return "artifact.png";
     }
 
 }

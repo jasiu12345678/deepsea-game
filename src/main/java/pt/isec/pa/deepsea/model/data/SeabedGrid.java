@@ -63,13 +63,14 @@ public class SeabedGrid implements Serializable, IGrid {
         Random rand = new Random();
         for (int y = 0; y < getHeight(); y++) {
             for (int x = 0; x < getWidth(); x++) {
-                if (grid[y][x].isEmpty()) continue;
+                if (!grid[y][x].isEmpty()) continue;
                 double roll = rand.nextDouble();
-                if (roll < 0.10) {
+                if (roll < 0.05) {
                     grid[y][x] = new Monster();
-                } else if (roll < 0.25) {
-                    grid[y][x] = new Ore(25);
-                } else if (roll < 0.25) {
+                } else if (roll < 0.15) {
+                    int randomQuantity = rand.nextInt(GameConstants.MAX_ORE_VALUE) + 1;
+                    grid[y][x] = new Ore(randomQuantity);
+                } else if (roll < 0.20) {
                     grid[y][x] = new Artifact();
                 }
             }
@@ -122,4 +123,19 @@ public class SeabedGrid implements Serializable, IGrid {
             }
         }
     }
+
+    public boolean isRevealed(int x, int y) {
+        if (isOutOfBounds(x, y)) return false;
+        GridElement element = grid[y][x];
+        return element != null && element.isRevealed();
+    }
+
+    @Override
+    public String getElementImage(int x, int y) {
+        if (isOutOfBounds(x, y)) return "water.png";
+        GridElement element = grid[y][x];
+        if (element == null) return "water.png";
+        return element.getImageName();
+    }
+
 }

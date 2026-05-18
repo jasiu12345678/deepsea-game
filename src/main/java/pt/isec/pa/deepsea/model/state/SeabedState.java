@@ -16,8 +16,11 @@ public class SeabedState extends Adapter {
 
     @Override
     public boolean navigate(Directions dir) {
+        if (data.hasPendingCollectible()) {
+            return false;
+        }
         boolean moved = data.moveDroneInSeabed(dir);
-        if (!moved && !data.hasActiveDrone()) {
+        if (!data.hasActiveDrone()) {
             if (data.checkLossCondition()) {
                 changeState(State.GAME_OVER);
             } else {
@@ -30,19 +33,15 @@ public class SeabedState extends Adapter {
 
     @Override
     public boolean collectItem() {
-        if (data.collectItem()) {
-            if (data.hasPendingCollectible()) {
-                changeState(State.MINIGAME);
-            }
-            return true;
-        }
-        return false;
+        return data.collectItem();
     }
 
     @Override
-    public boolean confirmCollection(boolean confirm) {
-        if (!data.hasPendingCollectible()) return false;
-        if (!confirm) {
+    public boolean confirmCollection(boolean accept) {
+        if (!data.hasPendingCollectible()) {
+            return false;
+        }
+        if (!accept) {
             data.resolvePending(false);
             return true;
         }

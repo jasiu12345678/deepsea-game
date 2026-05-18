@@ -12,4 +12,8 @@ public class Rock extends Obstacle{
         drone.takeDamage();
         return true;
     }
+    @Override
+    public String getImageName() {
+        return "rock.png";
+    }
 }

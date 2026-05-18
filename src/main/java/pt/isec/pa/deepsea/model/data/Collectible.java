@@ -11,5 +11,5 @@ public abstract class Collectible extends GridElement {
     public abstract void completeCollection(Drone drone, IGrid grid);
 
     public abstract boolean requiresMiniGame();
-
+    public abstract void addToShip(Ship ship);
 }

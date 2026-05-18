@@ -37,4 +37,5 @@ public abstract class GridElement implements Serializable {
     }
 
     public boolean isEmpty() {return false;}
+    public abstract String getImageName();
 }

@@ -27,15 +27,12 @@ public final class GameConstants {
     public static final int SEABED_HEIGHT = 10;
 
     public static final double MAX_ROCKS_PERCENTAGE = 0.50;
-    public static int calculateMaxRocksPerLine(int gridWidth) {
-        return (int) (gridWidth * MAX_ROCKS_PERCENTAGE);
-    }
 
-    public static final int MAX_ORE_VALUE = 50;
+    public static final int MAX_ORE_VALUE = 5;
     public static final int TOTAL_ARTIFACTS = 10;
 
     public static final int MIN_ORE_VALUE_PRESENTATION = 1;
 
-    public static final int MINIGAME_GRID_SIZE = 4;
-    public static final int MINIGAME_PIECES = 15;
+    public static final int MINIGAME_GRID_SIZE = 3;
+    public static final int MAX_PUZZLE_MOVES = 100;
 }
