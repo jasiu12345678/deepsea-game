@@ -4,6 +4,10 @@ import javafx.scene.image.Image;
 
 import java.util.HashMap;
 
+/**
+ * Loads and caches images from {@code resources/images} for the UI.
+ */
+
 public class ImageLoader {
     private static final HashMap<String, Image> images = new HashMap<>();
 

@@ -4,6 +4,15 @@ import pt.isec.pa.deepsea.model.data.GameData;
 
 import java.io.Serializable;
 
+/**
+ * Holds the active state of the game and forwards every action to it
+ * (the "context" part of the State design pattern).
+ * <p>
+ * Each method simply delegates to the current {@link IState}. The concrete
+ * state decides whether the action is allowed and, when needed, asks the
+ * context to switch to another state through {@link #changeState(IState)}.
+ * The whole context is {@link Serializable} so a game can be saved and loaded.
+ */
 public class Context implements Serializable {
     private IState currentState;
     private final GameData data;

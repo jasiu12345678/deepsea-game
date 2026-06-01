@@ -8,6 +8,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Underwater drone used in the trench and on the seabed. Has fuel, hull and carried resources.
+ */
+
 public class Drone implements Serializable {
     private static final long serialVersionUID = 1L;
     private int currentFuel;
@@ -27,7 +31,7 @@ public class Drone implements Serializable {
     public Drone() {
         this.maxFuel = GameConstants.DRONE_MAX_FUEL;
         this.currentFuel = maxFuel;
-        this.maxHull = GameConstants.DRONE_MAX_HULL;
+        this.maxHull = GameConstants.DRONE_START_HULL;
         this.currentHull = maxHull;
         this.transportedResources = new ArrayList<>();
         this.id = nextId++;
@@ -150,7 +154,7 @@ public class Drone implements Serializable {
 
     public void increaseMaxHull(int amount) {
         if (amount > 0) {
-            maxHull += amount;
+            maxHull = Math.min(GameConstants.DRONE_MAX_HULL, maxHull + amount);
         }
     }
 

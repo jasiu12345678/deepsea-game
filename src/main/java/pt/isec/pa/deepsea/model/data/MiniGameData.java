@@ -94,6 +94,6 @@ public class MiniGameData implements Serializable {
         return true;
     }
 
-    public int[][] getGrid() { return grid; }
+    int[][] getGrid() { return grid; }
     public int getMovesCount() { return movesCount; }
 }

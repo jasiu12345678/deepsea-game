@@ -1,14 +1,15 @@
 package pt.isec.pa.deepsea.ui.states;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import pt.isec.pa.deepsea.model.Manager;
+import pt.isec.pa.deepsea.model.State;
 import pt.isec.pa.deepsea.model.data.DroneInfo;
 
 public class WorkshopState extends BorderPane {
@@ -20,7 +21,17 @@ public class WorkshopState extends BorderPane {
         this.manager = manager;
         createViews();
         registerListeners();
+        registerHandlers();
         updateVisibility();
+    }
+
+    private void registerHandlers() {
+        setOnKeyPressed(event -> {
+            if (event.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                manager.closeWorkshop();
+                event.consume();
+            }
+        });
     }
 
     private void createViews() {
@@ -62,8 +73,8 @@ public class WorkshopState extends BorderPane {
     }
 
     private void registerListeners() {
-        manager.addClient("data", evt -> update());
-        manager.addClient("state", evt -> updateVisibility());
+        manager.addClient(Manager.DATA, evt -> update());
+        manager.addClient(Manager.STATE, evt -> updateVisibility());
 
         btnSelect.setOnAction(e -> {
             DroneInfo selected = droneListView.getSelectionModel().getSelectedItem();
@@ -89,10 +100,10 @@ public class WorkshopState extends BorderPane {
     }
 
     private void updateVisibility() {
-        boolean isWorkshop = (manager.getState() != null && manager.getState().name().equals("WORKSHOP"));
-        this.setVisible(isWorkshop);
-
+        boolean isWorkshop = manager.getState() == State.WORKSHOP;
+        setVisible(isWorkshop);
         if (isWorkshop) {
+            Platform.runLater(this::requestFocus);
             update();
         }
     }

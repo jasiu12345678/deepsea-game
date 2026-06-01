@@ -8,96 +8,56 @@ import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.util.List;
 
+/**
+ * Facade of the data model and the only entry point the user interface talks to.
+ * <p>
+ * Every game operation is delegated to the {@link Context} (the state machine)
+ * and to {@link GameData}. After each operation the manager notifies the UI
+ * through {@link PropertyChangeSupport} using three channels:
+ * <ul>
+ *   <li>{@link #STATE} - the active game moment changed;</li>
+ *   <li>{@link #DATA} - the game data may have changed and views should redraw;</li>
+ *   <li>{@link #LOG} - a log entry was added or the log was cleared.</li>
+ * </ul>
+ * The UI never accesses the model classes directly; it reads everything through
+ * this facade and reacts to the notifications above.
+ */
+
 public class Manager {
     private GameData data;
     private Context context;
     PropertyChangeSupport pcs;
+    public final static String DATA = "data";
+    public final static String STATE = "state";
+    public final static String LOG = "log";
 
     public Manager() {
         this.data = new GameData();
         this.context = new Context(data);
         pcs = new PropertyChangeSupport(this);
+        Log.getInstance().addPropertyChangeListener(evt -> pcs.firePropertyChange(LOG, null, evt.getNewValue()));
     }
 
-    public boolean navigate(Directions dir) {
-        boolean result = context.navigate(dir);
-        pcs.firePropertyChange("data", null, null);
-        pcs.firePropertyChange("state", null, context.getState());
+    private boolean handler(State before, boolean result) {
+        if (context.getState() != before) {
+            pcs.firePropertyChange(STATE, before, context.getState());
+        }
+        pcs.firePropertyChange(DATA, null, context);
         return result;
     }
 
-    public boolean startDescent() {
-        boolean result = context.startDescent();
-        pcs.firePropertyChange("data", null, null);
-        pcs.firePropertyChange("state", null, context.getState());
-        return result;
-    }
-
-    public boolean startAscent() {
-        boolean result = context.startAscent();
-        pcs.firePropertyChange("data", null, null);
-        pcs.firePropertyChange("state", null, context.getState());
-        return result;
-    }
-
-    public boolean openWorkshop() {
-        boolean result = context.openWorkshop();
-        pcs.firePropertyChange("data", null, null);
-        pcs.firePropertyChange("state", null, context.getState());
-        return result;
-    }
-
-    public boolean closeWorkshop() {
-        boolean result = context.closeWorkshop();
-        pcs.firePropertyChange("data", null, null);
-        pcs.firePropertyChange("state", null, context.getState());
-        return result;
-    }
-
-    public boolean collectItem() {
-        boolean result = context.collectItem();
-        pcs.firePropertyChange("data", null, null);
-        pcs.firePropertyChange("state", null, context.getState());
-        return result;
-    }
-
-    public boolean resolveMiniGame(boolean won) {
-        boolean result = context.resolveMiniGame(won);
-        pcs.firePropertyChange("data", null, null);
-        pcs.firePropertyChange("state", null, context.getState());
-        return result;
-    }
-
-    public boolean repairDrone(int id) {
-        boolean result = context.repairDrone(id);
-        pcs.firePropertyChange("data", null, null);
-        return result;
-    }
-
-    public boolean refuelDrone(int id) {
-        boolean result = context.refuelDrone(id);
-        pcs.firePropertyChange("data", null, null);
-        return result;
-    }
-
-    public boolean upgradeDrone(int id) {
-        boolean result = context.upgradeDrone(id);
-        pcs.firePropertyChange("data", null, null);
-        return result;
-    }
-
-    public boolean selectDrone(int id) {
-        boolean result = context.selectDrone(id);
-        pcs.firePropertyChange("data", null, null);
-        return result;
-    }
-
-    public boolean confirmCollection(boolean confirm) {
-        boolean result = context.confirmCollection(confirm);
-        pcs.firePropertyChange("data", null, null);
-        pcs.firePropertyChange("state", null, context.getState());
-        return result;
-    }
+    public boolean navigate(Directions dir)   { State b = context.getState(); return handler(b, context.navigate(dir)); }
+    public boolean startDescent()             { State b = context.getState(); return handler(b, context.startDescent()); }
+    public boolean startAscent()              { State b = context.getState(); return handler(b, context.startAscent()); }
+    public boolean openWorkshop()             { State b = context.getState(); return handler(b, context.openWorkshop()); }
+    public boolean closeWorkshop()            { State b = context.getState(); return handler(b, context.closeWorkshop()); }
+    public boolean collectItem()              { State b = context.getState(); return handler(b, context.collectItem()); }
+    public boolean resolveMiniGame(boolean w) { State b = context.getState(); return handler(b, context.resolveMiniGame(w)); }
+    public boolean confirmCollection(boolean c){ State b = context.getState(); return handler(b, context.confirmCollection(c)); }
+    public boolean repairDrone(int id)        { State b = context.getState(); return handler(b, context.repairDrone(id)); }
+    public boolean refuelDrone(int id)        { State b = context.getState(); return handler(b, context.refuelDrone(id)); }
+    public boolean upgradeDrone(int id)       { State b = context.getState(); return handler(b, context.upgradeDrone(id)); }
+    public boolean selectDrone(int id)        { State b = context.getState(); return handler(b, context.selectDrone(id)); }
 
     public boolean hasActiveDrone() { return data.hasActiveDrone(); }
     public int getDroneX() { return data.getDroneX(); }
@@ -180,14 +140,30 @@ public class Manager {
 
     public boolean load(String filename) {
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filename))) {
+            State before = context.getState();
             this.context = (Context) in.readObject();
             this.data = context.getGameData();
+            pcs.firePropertyChange(DATA, null, context);
+            pcs.firePropertyChange(STATE, before, context.getState());
+            Log.getInstance().addLog("Game loaded: " + filename);
             return true;
         } catch (Exception e) { return false; }
     }
 
+    public void newGame() {
+        State before = context.getState();
+        this.data = new GameData();
+        this.context = new Context(data);
+        pcs.firePropertyChange(DATA, null, context);
+        pcs.firePropertyChange(STATE, before, context.getState());
+    }
+
     public void clearLogs() {
         Log.getInstance().clearLogs();
-        pcs.firePropertyChange("log_clear", false, true);
+        pcs.firePropertyChange(LOG, false, true);
+    }
+
+    public List<String> getLogs() {
+        return Log.getInstance().getLogs();
     }
 }

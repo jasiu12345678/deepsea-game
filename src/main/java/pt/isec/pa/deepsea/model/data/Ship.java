@@ -7,6 +7,10 @@ import pt.isec.pa.deepsea.model.Log;
 import java.io.Serializable;
 import java.util.*;
 
+/**
+ * The player ship on the surface. Manages fuel, ores, artifacts and the drone fleet.
+ */
+
 public class Ship implements Serializable {
     private static final long serialVersionUID = 1L;
     private int currentFuel;
@@ -134,8 +138,8 @@ public class Ship implements Serializable {
         if (drone == null || currentFuel < 1 || drone.getFuel() >= drone.getMaxFuel()) {
             return false;
         }
-        consumeFuel(1);
-        drone.refuel(1);
+        consumeFuel(10);
+        drone.refuel(10);
         return true;
     }
 

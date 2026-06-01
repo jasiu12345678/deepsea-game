@@ -1,74 +1,90 @@
 package pt.isec.pa.deepsea.ui.states;
 
-import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import pt.isec.pa.deepsea.model.Manager;
-import pt.isec.pa.deepsea.ui.utils.ImageLoader;
+import pt.isec.pa.deepsea.model.Directions;
 import pt.isec.pa.deepsea.model.GameConstants;
+import pt.isec.pa.deepsea.model.Manager;
+import pt.isec.pa.deepsea.model.State;
+import pt.isec.pa.deepsea.ui.res.SoundManager;
+import pt.isec.pa.deepsea.ui.utils.ImageLoader;
 
-public class TrenchState extends Pane {
-    private final Manager manager;
-    private final Canvas canvas;
+public class TrenchState extends CanvasState {
 
     public TrenchState(Manager manager) {
-        this.manager = manager;
-        this.canvas = new Canvas(804, 768);
-        this.getChildren().add(canvas);
-
-        registerListeners();
-        updateVisibility();
+        super(manager);
     }
 
-    private void registerListeners() {
-        manager.addClient("data", evt -> draw());
-        manager.addClient("state", evt -> updateVisibility());
+    @Override
+    protected State matchingState() {
+        return State.TRENCH;
     }
 
-    private void updateVisibility() {
-        if (manager.getState() == null) return;
-        String stateName = manager.getState().name();
+    @Override
+    protected void registerHandlers() {
+        setOnKeyPressed(event -> {
+            boolean handled = true;
+            switch (event.getCode()) {
+                case UP, W -> moveDrone(Directions.UP);
+                case DOWN, S -> moveDrone(Directions.DOWN);
+                case LEFT, A -> moveDrone(Directions.LEFT);
+                case RIGHT, D -> moveDrone(Directions.RIGHT);
+                default -> handled = false;
+            }
+            if (handled) event.consume();
+        });
+    }
 
-        boolean isTrench = stateName.equals("TRENCH");
-        this.setVisible(isTrench);
-        if (isTrench) {
-            draw();
+    private void moveDrone(Directions dir) {
+        boolean hadDrone = manager.hasActiveDrone();
+        int hpBefore = manager.getActiveDroneHP();
+        boolean moved = manager.navigate(dir);
+        if (hadDrone && !manager.hasActiveDrone()) {
+            SoundManager.playForever(SoundManager.DRONE_DESTROYED);
+        } else if (manager.hasActiveDrone() && manager.getActiveDroneHP() < hpBefore) {
+            int tx = manager.getDroneX();
+            int ty = manager.getDroneY();
+            switch (dir) {
+                case UP -> ty--;
+                case DOWN -> ty++;
+                case LEFT -> tx--;
+                case RIGHT -> tx++;
+            }
+            if ("marineanimal.png".equals(manager.getTrenchElementImage(tx, ty))) {
+                SoundManager.playThen(SoundManager.DRONE_MOVE, SoundManager.DRONE_ANIMAL);
+            } else {
+                SoundManager.play(SoundManager.DRONE_HIT);
+            }
+        } else if (moved) {
+            SoundManager.play(SoundManager.DRONE_MOVE);
         }
     }
 
-    private void draw() {
-        if (!this.isVisible()) return;
+    @Override
+    protected void draw() {
+        if (!isVisible()) return;
 
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        GraphicsContext gc = getGraphicsContext2D();
+        gc.clearRect(0, 0, getWidth(), getHeight());
         gc.setFill(Color.rgb(20, 50, 80));
-        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        gc.fillRect(0, 0, getWidth(), getHeight());
 
         int cols = GameConstants.TRENCH_WIDTH;
         int rows = GameConstants.TRENCH_HEIGHT;
-
         if (cols <= 0 || rows <= 0) return;
 
-        double tileWidth = canvas.getWidth() / cols;
-        double tileHeight = canvas.getHeight() / rows;
-        double tileSize = Math.min(tileWidth, tileHeight);
-
-        double offsetX = (canvas.getWidth() - (cols * tileSize)) / 2;
-        double offsetY = (canvas.getHeight() - (rows * tileSize)) / 2;
+        double tileSize = Math.min(getWidth() / cols, getHeight() / rows);
+        double offsetX = (getWidth() - cols * tileSize) / 2;
+        double offsetY = (getHeight() - rows * tileSize) / 2;
 
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
-                try {
-                    String imgName = manager.getTrenchElementImage(x, y);
-                    if (imgName != null && !imgName.isEmpty()) {
-                        var img = ImageLoader.getImage(imgName);
-                        if (img != null) {
-                            gc.drawImage(img, offsetX + (x * tileSize), offsetY + (y * tileSize), tileSize, tileSize);
-                        }
+                String imgName = manager.getTrenchElementImage(x, y);
+                if (imgName != null && !imgName.isEmpty()) {
+                    var img = ImageLoader.getImage(imgName);
+                    if (img != null) {
+                        gc.drawImage(img, offsetX + x * tileSize, offsetY + y * tileSize, tileSize, tileSize);
                     }
-                } catch (Exception e) {
                 }
             }
         }
@@ -76,7 +92,7 @@ public class TrenchState extends Pane {
         if (manager.hasActiveDrone()) {
             var droneImg = ImageLoader.getImage("drone.png");
             if (droneImg != null) {
-                gc.drawImage(droneImg, offsetX + (manager.getDroneX() * tileSize), offsetY + (manager.getDroneY() * tileSize), tileSize, tileSize);
+                gc.drawImage(droneImg, offsetX + manager.getDroneX() * tileSize, offsetY + manager.getDroneY() * tileSize, tileSize, tileSize);
             }
         }
     }

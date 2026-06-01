@@ -1,64 +1,77 @@
 package pt.isec.pa.deepsea.ui.states;
 
-import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import pt.isec.pa.deepsea.model.Directions;
+import pt.isec.pa.deepsea.model.GameConstants;
 import pt.isec.pa.deepsea.model.Manager;
+import pt.isec.pa.deepsea.model.State;
+import pt.isec.pa.deepsea.ui.res.SoundManager;
 import pt.isec.pa.deepsea.ui.utils.ImageLoader;
 
-public class SurfaceState extends Pane {
-    private final Manager manager;
-    private final Canvas canvas;
+public class SurfaceState extends CanvasState {
 
     public SurfaceState(Manager manager) {
-        this.manager = manager;
-        this.canvas = new Canvas(804, 768);
-        this.getChildren().add(canvas);
-
-        registerListeners();
-        updateVisibility();
+        super(manager);
     }
 
-    private void registerListeners() {
-        manager.addClient("data", evt -> draw());
-        manager.addClient("state", evt -> updateVisibility());
+    @Override
+    protected State matchingState() {
+        return State.SURFACE;
     }
 
-    private void updateVisibility() {
-        if (manager.getState() == null) return;
-        boolean isSurface = manager.getState().name().equals("SURFACE");
+    @Override
+    protected void registerHandlers() {
+        setOnKeyPressed(event -> {
+            boolean handled = true;
+            switch (event.getCode()) {
+                case UP, W -> moveShip(Directions.UP);
+                case DOWN, S -> moveShip(Directions.DOWN);
+                case LEFT, A -> moveShip(Directions.LEFT);
+                case RIGHT, D -> moveShip(Directions.RIGHT);
+                case ENTER -> manager.startDescent();
+                case TAB -> manager.openWorkshop();
+                default -> handled = false;
+            }
+            if (handled) event.consume();
+        });
+    }
 
-        this.setVisible(isSurface);
-        if (isSurface) {
-            draw();
+    private void moveShip(Directions dir) {
+        if (manager.navigate(dir)) {
+            SoundManager.play(SoundManager.SHIP_MOVE);
         }
     }
 
-    private void draw() {
-        if (!this.isVisible()) return;
+    @Override
+    protected void draw() {
+        if (!isVisible()) return;
 
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        GraphicsContext gc = getGraphicsContext2D();
+        gc.clearRect(0, 0, getWidth(), getHeight());
         gc.setFill(Color.rgb(135, 206, 235));
-        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        gc.fillRect(0, 0, getWidth(), getHeight());
+
+        int cols = GameConstants.SURFACE_WIDTH;
+        int rows = GameConstants.SURFACE_HEIGHT;
+        if (cols <= 0 || rows <= 0) return;
+
+        double tileSize = Math.min(getWidth() / cols, getHeight() / rows);
+        double offsetX = (getWidth() - cols * tileSize) / 2;
+        double offsetY = (getHeight() - rows * tileSize) / 2;
 
         var waterImg = ImageLoader.getImage("water.png");
-        var shipImg = ImageLoader.getImage("ship.png");
-
-        double tileSize = 40.0;
-
         if (waterImg != null) {
-            for (int y = 0; y < canvas.getHeight() / tileSize + 1; y++) {
-                for (int x = 0; x < canvas.getWidth() / tileSize + 1; x++) {
-                    gc.drawImage(waterImg, x * tileSize, y * tileSize, tileSize, tileSize);
+            for (int y = 0; y < rows; y++) {
+                for (int x = 0; x < cols; x++) {
+                    gc.drawImage(waterImg, offsetX + x * tileSize, offsetY + y * tileSize, tileSize, tileSize);
                 }
             }
         }
 
+        var shipImg = ImageLoader.getImage("ship.png");
         if (shipImg != null) {
-            gc.drawImage(shipImg, manager.getShipX() * tileSize, manager.getShipY() * tileSize, tileSize, tileSize);
+            gc.drawImage(shipImg, offsetX + manager.getShipX() * tileSize, offsetY + manager.getShipY() * tileSize, tileSize, tileSize);
         }
     }
 }

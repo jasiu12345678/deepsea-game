@@ -1,60 +1,60 @@
 package pt.isec.pa.deepsea.ui.states;
 
 import javafx.geometry.VPos;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
-import pt.isec.pa.deepsea.model.Manager;
+import pt.isec.pa.deepsea.model.Directions;
 import pt.isec.pa.deepsea.model.GameConstants;
+import pt.isec.pa.deepsea.model.Manager;
+import pt.isec.pa.deepsea.model.State;
 
-public class MiniGameState extends Pane {
-    private final Manager manager;
-    private final Canvas canvas;
+public class MiniGameState extends CanvasState {
 
     public MiniGameState(Manager manager) {
-        this.manager = manager;
-        this.canvas = new Canvas(804, 768);
-        this.getChildren().add(canvas);
-        registerListeners();
-        updateVisibility();
+        super(manager);
     }
 
-    private void registerListeners() {
-        manager.addClient("data", evt -> draw());
-        manager.addClient("state", evt -> updateVisibility());
+    @Override
+    protected State matchingState() {
+        return State.MINIGAME;
     }
 
-    private void updateVisibility() {
-        if (manager.getState() == null) return;
-        boolean isMinigame = manager.getState().name().equals("MINIGAME");
-        this.setVisible(isMinigame);
-        if (isMinigame) {
-            draw();
-        }
+    @Override
+    protected void registerHandlers() {
+        setOnKeyPressed(event -> {
+            boolean handled = true;
+            switch (event.getCode()) {
+                case UP, W -> manager.navigate(Directions.UP);
+                case DOWN, S -> manager.navigate(Directions.DOWN);
+                case LEFT, A -> manager.navigate(Directions.LEFT);
+                case RIGHT, D -> manager.navigate(Directions.RIGHT);
+                default -> handled = false;
+            }
+            if (handled) event.consume();
+        });
     }
 
-    private void draw() {
-        if (!this.isVisible()) return;
+    @Override
+    protected void draw() {
+        if (!isVisible()) return;
 
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-
+        GraphicsContext gc = getGraphicsContext2D();
+        gc.clearRect(0, 0, getWidth(), getHeight());
         gc.setFill(Color.rgb(12, 20, 34));
-        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        gc.fillRect(0, 0, getWidth(), getHeight());
 
         int[][] puzzle = manager.getPuzzleGrid();
         if (puzzle == null) return;
 
         int gridSize = GameConstants.MINIGAME_GRID_SIZE;
 
-        double boardSize = 420;
+        double boardSize = Math.min(getWidth(), getHeight()) * 0.55;
         double tileSize = boardSize / gridSize;
-        double offsetX = (canvas.getWidth() - boardSize) / 2;
-        double offsetY = (canvas.getHeight() - boardSize) / 2;
+        double offsetX = (getWidth() - boardSize) / 2;
+        double offsetY = (getHeight() - boardSize) / 2;
 
         int movesLeft = GameConstants.MAX_PUZZLE_MOVES - manager.getPuzzleMovesCount();
         gc.setTextAlign(TextAlignment.CENTER);
@@ -66,7 +66,7 @@ public class MiniGameState extends Pane {
         } else {
             gc.setFill(Color.rgb(46, 204, 113));
         }
-        gc.fillText("REMAINING MOVES: " + Math.max(0, movesLeft), canvas.getWidth() / 2, offsetY - 50);
+        gc.fillText("REMAINING MOVES: " + Math.max(0, movesLeft), getWidth() / 2, offsetY - 50);
 
         gc.setFill(Color.rgb(22, 34, 56));
         gc.fillRoundRect(offsetX - 15, offsetY - 15, boardSize + 30, boardSize + 30, 20, 20);
@@ -88,8 +88,8 @@ public class MiniGameState extends Pane {
         for (int y = 0; y < gridSize; y++) {
             for (int x = 0; x < gridSize; x++) {
                 int value = puzzle[y][x];
-                double tileX = offsetX + (x * tileSize);
-                double tileY = offsetY + (y * tileSize);
+                double tileX = offsetX + x * tileSize;
+                double tileY = offsetY + y * tileSize;
 
                 if (value == 0) {
                     gc.setFill(Color.rgb(16, 26, 43));
@@ -114,12 +114,12 @@ public class MiniGameState extends Pane {
 
                 gc.setFont(Font.font("Arial", FontWeight.BOLD, gridSize == 3 ? 42 : 34));
                 gc.setFill(Color.WHITE);
-                gc.fillText(String.valueOf(value), tileX + (tileSize / 2), tileY + (tileSize / 2));
+                gc.fillText(String.valueOf(value), tileX + tileSize / 2, tileY + tileSize / 2);
             }
         }
 
         gc.setFont(Font.font("Arial", FontWeight.NORMAL, 16));
         gc.setFill(Color.rgb(140, 159, 191));
-        gc.fillText("Use [ARROWS] or [WSAD] to slide highlighted tiles into the empty gap.", canvas.getWidth() / 2, offsetY + boardSize + 45);
+        gc.fillText("Use [ARROWS] or [WSAD] to slide highlighted tiles into the empty gap.", getWidth() / 2, offsetY + boardSize + 45);
     }
 }

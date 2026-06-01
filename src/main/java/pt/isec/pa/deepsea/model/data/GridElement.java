@@ -2,6 +2,10 @@ package pt.isec.pa.deepsea.model.data;
 
 import java.io.Serializable;
 
+/**
+ * Base type for anything placed on a grid cell (obstacles and collectibles).
+ */
+
 public abstract class GridElement implements Serializable {
 
     private static final long serialVersionUID = 1L;

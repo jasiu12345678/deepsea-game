@@ -2,6 +2,10 @@ package pt.isec.pa.deepsea.model;
 
 import pt.isec.pa.deepsea.model.data.GameData;
 
+/**
+ * Base class for model states. Provides default {@code false} for actions that are not allowed.
+ */
+
 public abstract class Adapter implements IState {
     protected Context context;
     protected GameData data;

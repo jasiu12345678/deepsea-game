@@ -50,8 +50,8 @@ public class SidebarUI extends VBox {
     }
 
     private void registerListeners() {
-        manager.addClient("data", evt -> update());
-        manager.addClient("state", evt -> update());
+        manager.addClient(Manager.DATA, evt -> update());
+        manager.addClient(Manager.STATE, evt -> update());
     }
 
     private void update() {

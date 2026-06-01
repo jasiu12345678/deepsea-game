@@ -4,6 +4,11 @@ import pt.isec.pa.deepsea.model.data.GameData;
 import pt.isec.pa.deepsea.model.state.*;
 
 
+/**
+ * Enumeration of game moments (surface, trench, seabed, workshop, etc.).
+ * Each value creates the matching {@link IState} implementation.
+ */
+
 public enum State {
     SURFACE,
     TRENCH,

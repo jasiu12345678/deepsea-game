@@ -9,6 +9,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Owns the whole game world: the {@link Ship}, the nested {@link SurfaceGrid}
+ * (which contains every trench and seabed), the optional {@link MiniGameData}
+ * and the collectible currently waiting to be confirmed.
+ * <p>
+ * The state classes call its methods to move actors, collect items and check
+ * win or loss conditions, while the UI reads its many getters (through the
+ * {@link pt.isec.pa.deepsea.model.Manager} facade) to draw the screen. Lists
+ * returned to the outside are unmodifiable so the UI cannot change the model.
+ */
 public class GameData implements Serializable {
     private static final long serialVersionUID = 1L;
     private final Ship ship;

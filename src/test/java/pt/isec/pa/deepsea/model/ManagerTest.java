@@ -3,16 +3,17 @@ package pt.isec.pa.deepsea.model;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import pt.isec.pa.deepsea.model.data.DroneInfo;
 import pt.isec.pa.deepsea.model.data.Drone;
+import pt.isec.pa.deepsea.model.data.DroneInfo;
 
 import java.io.File;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ManagerTest {
+class ManagerTest {
+
     private Manager manager;
-    private final String TEST_SAVE_FILE = "test.dat";
+    private static final String TEST_SAVE_FILE = "test-save.dat";
 
     @BeforeEach
     void setUp() {
@@ -29,49 +30,56 @@ public class ManagerTest {
     }
 
     @Test
-    void testInitialization() {
-        assertEquals(State.SURFACE.toString(), manager.getCurrentStateName(), "manager should read the state name");
-        assertEquals(GameConstants.SHIP_MAX_FUEL, manager.getShipFuel(), "ship should have max fuel at start");
-        assertEquals(0, manager.getOreCount(), "ship should have no ores at start");
+    void testInitialState() {
+        assertEquals(State.SURFACE, manager.getState(), "Game should start on the surface");
+        assertEquals(GameConstants.SHIP_MAX_FUEL, manager.getShipFuel(), "Ship should start with full fuel");
+        assertEquals(0, manager.getOreCount(), "Ship should start with no ores");
     }
 
     @Test
     void testStateTransitions() {
-        assertTrue(manager.openWorkshop(), "openworkshop manager");
-        assertEquals(State.WORKSHOP.toString(), manager.getCurrentStateName());
+        assertTrue(manager.openWorkshop(), "Should be able to open the workshop on the surface");
+        assertEquals(State.WORKSHOP, manager.getState());
 
-        assertTrue(manager.closeWorkshop(), "manager close workshop");
-        assertEquals(State.SURFACE.toString(), manager.getCurrentStateName());
+        assertTrue(manager.closeWorkshop(), "Should be able to close the workshop");
+        assertEquals(State.SURFACE, manager.getState());
     }
 
     @Test
-    void testImmutabilityOfExposedData() {
+    void testExposedDroneListIsUnmodifiable() {
         var drones = manager.getDronesSortedByFuel();
-        assertNotNull(drones, "drones is null");
-        assertEquals(3, drones.size(), "should be 3 drones");
-        assertThrows(UnsupportedOperationException.class, () -> {
-            drones.add(new DroneInfo(99, 100, 100, 10, 10));
-        }, "UI should't be able to modify the drones list!");
+        assertEquals(GameConstants.DRONE_MAX_QUANTITY, drones.size(), "All drones should be exposed");
+        assertThrows(UnsupportedOperationException.class,
+                () -> drones.add(new DroneInfo(99, 100, 100, 10, 10)),
+                "The UI must not be able to modify the exposed list");
     }
 
     @Test
-    void testSaveAndLoadConsistency() {
+    void testSaveAndLoadKeepsState() {
         manager.openWorkshop();
         manager.selectDrone(1);
         manager.closeWorkshop();
         manager.startDescent();
-        assertEquals(State.TRENCH.toString(), manager.getCurrentStateName());
-        assertTrue(manager.save(TEST_SAVE_FILE), "can't save file");
-        Manager newManager = new Manager();
-        assertEquals(State.SURFACE.toString(), newManager.getCurrentStateName(), "new game should start at surface");
-        assertTrue(newManager.load(TEST_SAVE_FILE), "can't load file");
+        assertEquals(State.TRENCH, manager.getState(), "Setup should leave the game in the trench");
 
-        assertEquals(State.TRENCH.toString(), newManager.getCurrentStateName(),
-                "State should be in trench. Game saving doesn't work");
+        assertTrue(manager.save(TEST_SAVE_FILE), "Saving should succeed");
+
+        Manager other = new Manager();
+        assertEquals(State.SURFACE, other.getState(), "A new game starts on the surface");
+        assertTrue(other.load(TEST_SAVE_FILE), "Loading should succeed");
+        assertEquals(State.TRENCH, other.getState(), "Loaded game should restore the saved state");
     }
 
     @Test
-    void testLoadNonExistentFile() {
-        assertFalse(manager.load("non-existing-file-123.dat"), "should return false since the file doesn't exist");
+    void testLoadNonExistentFileReturnsFalse() {
+        assertFalse(manager.load("does-not-exist-123.dat"), "Loading a missing file should fail gracefully");
+    }
+
+    @Test
+    void testClearLogsEmptiesTheLog() {
+        manager.openWorkshop();
+        assertFalse(manager.getLogs().isEmpty(), "Actions should produce log entries");
+        manager.clearLogs();
+        assertTrue(manager.getLogs().isEmpty(), "Clearing should remove every log entry");
     }
 }

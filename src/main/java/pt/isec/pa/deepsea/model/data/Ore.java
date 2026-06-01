@@ -30,7 +30,7 @@ public class Ore extends Collectible {
     @Override
     public void completeCollection(Drone drone, IGrid grid) {
         drone.addToInventory(this);
-        drone.increaseFuelConsumption(quantity);
+        drone.increaseFuelConsumption(Math.max(2, quantity/10));
         grid.removeElement(drone.getX(), drone.getY());
         Log.getInstance().addLog("Ore collected.");
     }

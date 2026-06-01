@@ -2,6 +2,9 @@ package pt.isec.pa.deepsea.model;
 
 import java.io.Serializable;
 
+/**
+ * Contract for each game state. Defines which actions are allowed in that part of the game.
+ */
 public interface IState extends Serializable {
     boolean navigate(Directions dir);
     boolean openWorkshop();
