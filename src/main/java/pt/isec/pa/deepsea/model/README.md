@@ -1,3 +1,3 @@
-# Package: [model]
+# Package: model
 
-This package contains the main classes and other packages.
+Game logic: the `Manager` facade used by the UI, the `Context` of the State pattern, the `State`/`IState` abstractions, shared constants, the singleton `Log` and the `data` and `state` sub-packages.

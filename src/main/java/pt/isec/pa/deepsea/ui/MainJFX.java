@@ -20,7 +20,7 @@ public class MainJFX extends Application {
 
         root.requestFocus();
 
-        second.setTitle("2");
+        second.setTitle("Deep Sea Mining - Second View");
         second.setScene(new Scene(new RootPane(manager)));
         second.show();
 

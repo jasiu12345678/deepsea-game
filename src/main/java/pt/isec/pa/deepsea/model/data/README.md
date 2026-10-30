@@ -1,3 +1,3 @@
-# Package: [data]
+# Package: model.data
 
-This package contains the main data classes of the game. These classes represent the main objects such as the ship, drones and other elements of the game.
+Data classes of the game: the ship, drones, the grids (surface, trench, seabed) and all grid elements such as rocks, ore, artifacts, monsters and ocean currents. Elements implement their own interaction behaviour polymorphically.

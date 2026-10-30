@@ -1,8 +1,3 @@
-# Package: [state]
+# Package: model.state
 
-**Student Instructions:**
-Please delete this text and replace it with a brief description of this package.
-
-In your description, make sure to explain:
-* The main objective and responsibility of this package.
-* The type of classes, interfaces or functionalities that belong inside it.
+Concrete implementations of the game states (surface, trench, seabed, workshop, mini-game and game over). Each state decides which actions are allowed and when to transition to another state.

@@ -4,6 +4,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.VBox;
+import pt.isec.pa.deepsea.model.GameConstants;
 import pt.isec.pa.deepsea.model.Manager;
 
 public class SidebarUI extends VBox {
@@ -57,8 +58,8 @@ public class SidebarUI extends VBox {
     private void update() {
         shipFuelLabel.setText("Ship Fuel: " + manager.getShipFuel());
         oreLabel.setText("Ores Collected: " + manager.getOreCount());
-        artifactLabel.setText("Artifacts: " + manager.getArtifactCount() + " / 5");
-        droneHpLabel.setText(manager.getActiveDroneName() + " HP:");
+        artifactLabel.setText("Artifacts: " + manager.getArtifactCount() + " / " + GameConstants.TOTAL_ARTIFACTS);
+        droneHpLabel.setText(manager.getActiveDroneName() + " - Hull:");
 
         double maxHp = manager.getActiveDroneMaxHP();
         if (maxHp > 0) {
@@ -81,16 +82,16 @@ public class SidebarUI extends VBox {
                     controlsLabel.setText("CONTROLS:\n[WSAD] Move Ship\n[ENTER] Dive\n[TAB] Workshop");
                     break;
                 case SEABED:
-                    controlsLabel.setText("CONTROLS:\n[WSAD] Move Drone\n[SPACE] Collect Item\n[BACKSPACE] Ascend");
+                    controlsLabel.setText("CONTROLS:\n[WSAD] Move Drone\n[SPACE] Collect Item\n[BACKSPACE] Ascend\n[Y] / [N] Confirm pickup");
                     break;
                 case WORKSHOP:
-                    controlsLabel.setText("CONTROLS:\n[ESC] Close Workshop\nUse Mouse to repair");
+                    controlsLabel.setText("CONTROLS:\n[ESC] Close Workshop\nUse the buttons");
                     break;
                 case MINIGAME:
-                    controlsLabel.setText("CONTROLS:\n[Y] Accept\n[N] Decline");
+                    controlsLabel.setText("CONTROLS:\n[WSAD] / [Arrows] Slide tiles");
                     break;
                 case TRENCH:
-                    controlsLabel.setText("CONTROLS:\n[WSAD] Move Drone\n");
+                    controlsLabel.setText("CONTROLS:\n[WSAD] Move Drone");
                     break;
                 case GAME_OVER:
                     controlsLabel.setText("Game Over.");

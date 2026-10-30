@@ -58,8 +58,8 @@ public class ContextTest {
         context.closeWorkshop();
         context.startDescent();
 
-        boolean moved = context.navigate(Directions.DOWN);
-        assertTrue(moved, "drone should be able to navigate in trench and have a little free space at start");
+        boolean moved = context.navigate(Directions.LEFT);
+        assertTrue(moved, "the starting row of the trench is always free, so sideways movement must succeed");
         assertEquals(State.TRENCH, context.getState(), "Drone should be in trench");
     }
 

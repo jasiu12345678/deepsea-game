@@ -142,7 +142,7 @@ public class Drone implements Serializable {
 
     public void repair(int amount) {
         if (amount > 0) {
-            currentHull = Math.min(GameConstants.DRONE_MAX_HULL, currentHull + amount);
+            currentHull = Math.min(maxHull, currentHull + amount);
         }
     }
 

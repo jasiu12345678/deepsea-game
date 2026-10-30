@@ -1,8 +1,3 @@
-# Package: [deepsea]
+# Package: deepsea
 
-**Student Instructions:**
-Please delete this text and replace it with a brief description of this package.
-
-In your description, make sure to explain:
-* The main objective and responsibility of this package.
-* The type of classes, interfaces or functionalities that belong inside it.
+Root package of the game. It contains the application entry point (`DeepSeaApp`) and the `model` and `ui` sub-packages, which are kept strictly separated: the UI depends on the model, never the other way around.

@@ -45,6 +45,14 @@ public class WorkshopState extends BorderPane {
         this.setTop(title);
 
         droneListView = new ListView<>();
+        droneListView.setCellFactory(lv -> new javafx.scene.control.ListCell<>() {
+            @Override
+            protected void updateItem(DroneInfo d, boolean empty) {
+                super.updateItem(d, empty);
+                setText(empty || d == null ? null : String.format(
+                        "Drone #%d   Hull %d/%d   Fuel %d/%d", d.id(), d.hp(), d.maxHp(), d.fuel(), d.maxFuel()));
+            }
+        });
         droneListView.setStyle("-fx-control-inner-background: #2c3e50; -fx-text-fill: white; -fx-font-size: 16px;");
         this.setCenter(droneListView);
 

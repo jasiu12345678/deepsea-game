@@ -7,10 +7,18 @@
     <groupId>pt.isec.pa</groupId>
     <artifactId>DeepSeaMining</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <name>Deep Sea Mining</name>
+    <description>Turn-based deep-sea mining game built with JavaFX.</description>
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
 
     <properties>
-        <maven.compiler.source>25</maven.compiler.source>
-        <maven.compiler.target>25</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <javafx.version>21.0.2</javafx.version>

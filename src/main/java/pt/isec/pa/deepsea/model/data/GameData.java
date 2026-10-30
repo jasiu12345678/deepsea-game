@@ -78,7 +78,7 @@ public class GameData implements Serializable {
     public String getActiveDroneName() {
         var drone = ship.getActiveDrone();
         if (drone == null) {
-            return "null";
+            return "No active drone";
         }
         return "Drone#" + drone.getId();
     }

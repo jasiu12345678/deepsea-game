@@ -18,7 +18,7 @@ class DroneTest {
     @Test
     void testInitialState() {
         assertEquals(GameConstants.DRONE_MAX_FUEL, drone.getFuel(), "Drone should start with full fuel");
-        assertEquals(GameConstants.DRONE_MAX_HULL, drone.getHP(), "Drone should start with full hull");
+        assertEquals(GameConstants.DRONE_START_HULL, drone.getHP(), "Drone should start with full hull");
         assertTrue(drone.isAlive(), "A fresh drone should be alive");
         assertTrue(drone.getTransportedResources().isEmpty(), "A fresh drone should carry nothing");
     }
@@ -29,7 +29,7 @@ class DroneTest {
         drone.takeDamage(); // 1
         drone.takeDamage(); // 2
         drone.takeDamage(); // 3
-        assertEquals(GameConstants.DRONE_MAX_HULL - (1 + 2 + 3), drone.getHP(),
+        assertEquals(GameConstants.DRONE_START_HULL - (1 + 2 + 3), drone.getHP(),
                 "Damage should follow the increasing sequence 1, 2, 3");
     }
 
@@ -46,7 +46,7 @@ class DroneTest {
     void testRepairIsCappedAtMaxHull() {
         drone.takeDamage();
         drone.repair(1000);
-        assertEquals(GameConstants.DRONE_MAX_HULL, drone.getHP(), "Repair must not exceed the maximum hull");
+        assertEquals(drone.getMaxHP(), drone.getHP(), "Repair must not exceed the maximum hull");
     }
 
     @Test
