@@ -36,8 +36,6 @@ public class SeabedState extends CanvasState {
                 case RIGHT, D -> moveDrone(Directions.RIGHT);
                 case SPACE -> manager.collectItem();
                 case BACK_SPACE -> manager.startAscent();
-                case Y -> { if (manager.isAwaitingConfirmation()) manager.confirmCollection(true); }
-                case N -> { if (manager.isAwaitingConfirmation()) manager.confirmCollection(false); }
                 default -> handled = false;
             }
             if (handled) event.consume();
@@ -85,7 +83,7 @@ public class SeabedState extends CanvasState {
     private void drawPrompt(GraphicsContext gc, double px, double py, double tile) {
         if (!manager.isCollectibleUnderDrone()) return;
 
-        String text = manager.isAwaitingConfirmation() ? "Collect?  Y / N" : "Press SPACE";
+        String text = "Press SPACE";
         double width = 130;
         double height = 28;
         double x = px + tile / 2 - width / 2;

@@ -92,7 +92,6 @@ public class Manager {
     public boolean closeWorkshop()            { State b = context.getState(); return handler(b, context.closeWorkshop()); }
     public boolean collectItem()              { State b = context.getState(); return handler(b, context.collectItem()); }
     public boolean resolveMiniGame(boolean w) { State b = context.getState(); return handler(b, context.resolveMiniGame(w)); }
-    public boolean confirmCollection(boolean c){ State b = context.getState(); return handler(b, context.confirmCollection(c)); }
     public boolean repairDrone(int id)        { State b = context.getState(); return handler(b, context.repairDrone(id)); }
     public boolean refuelDrone(int id)        { State b = context.getState(); return handler(b, context.refuelDrone(id)); }
     public boolean upgradeDrone(int id)       { State b = context.getState(); return handler(b, context.upgradeDrone(id)); }
@@ -181,10 +180,6 @@ public class Manager {
             for (String line : Log.getInstance().getLogs()) writer.write(line + "\n");
             return true;
         } catch (IOException e) { return false; }
-    }
-
-    public boolean isAwaitingConfirmation() {
-        return context.isAwaitingConfirmation();
     }
 
     public int[][] getPuzzleGrid() {

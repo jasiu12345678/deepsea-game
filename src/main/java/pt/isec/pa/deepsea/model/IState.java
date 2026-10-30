@@ -17,7 +17,6 @@ public interface IState extends Serializable {
     boolean collectItem();
     boolean selectDrone(int droneId);
     boolean resolveMiniGame(boolean won);
-    boolean confirmCollection(boolean confirm);
 
     void entry();
     void exit();

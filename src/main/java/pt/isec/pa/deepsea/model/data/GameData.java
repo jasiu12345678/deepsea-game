@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Owns the whole game world: the {@link Ship}, the nested {@link SurfaceGrid}
  * (which contains every trench and seabed), the optional {@link MiniGameData}
- * and the collectible currently waiting to be confirmed.
+ * and the collectible whose recovery mini-game is in progress.
  * <p>
  * The state classes call its methods to move actors, collect items and check
  * win or loss conditions, while the UI reads its many getters (through the

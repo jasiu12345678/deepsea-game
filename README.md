@@ -30,7 +30,7 @@ You win by recovering all **5 artifacts**. You lose when the ship runs out of fu
 |---|---|
 | Surface | `W A S D` move ship, `Enter` dive, `Tab` open workshop |
 | Trench / Seabed | `W A S D` move drone |
-| Seabed | `Space` collect, `Y` / `N` confirm pickup, `Backspace` ascend |
+| Seabed | `Space` collect instantly, `Backspace` ascend |
 | Mini-game | `W A S D` or arrow keys slide tiles |
 | Workshop | Mouse to manage drones, `Esc` to leave |
 

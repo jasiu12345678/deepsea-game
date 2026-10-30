@@ -122,7 +122,7 @@ public class SidebarUI extends VBox {
         switch (state) {
             case SURFACE -> add("W A S D", "Move ship", "Enter", "Dive", "Tab", "Workshop");
             case TRENCH -> add("W A S D", "Move drone");
-            case SEABED -> add("W A S D", "Move drone", "Space", "Collect", "Y / N", "Confirm", "Backspace", "Ascend");
+            case SEABED -> add("W A S D", "Move drone", "Space", "Collect", "Backspace", "Ascend");
             case WORKSHOP -> add("Esc", "Leave workshop");
             case MINIGAME -> add("W A S D", "Slide tiles");
             case GAME_OVER -> add("Game > New", "Play again");

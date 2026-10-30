@@ -76,11 +76,6 @@ public abstract class Adapter implements IState {
         return false;
     }
     @Override
-    public boolean confirmCollection(boolean confirm) {
-        return false;
-    }
-
-    @Override
     public void entry() {
     }
 
