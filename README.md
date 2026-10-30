@@ -3,7 +3,7 @@
 A turn-based deep-sea mining game written in **Java** with **JavaFX**. You command a surface ship that
 launches underwater drones through a trench down to the seabed, where they collect ore and recover
 ancient artifacts while avoiding rocks, marine animals and monsters. The project was built for the
-*Programming Paradigms* course at ISEC (Portugal), and focuses on clean object-oriented design.
+*Advanced Programming* course at ISEC (Portugal), and focuses on clean object-oriented design.
 
 | Surface | Trench |
 |---|---|
