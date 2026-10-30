@@ -94,6 +94,23 @@ public class MiniGameData implements Serializable {
         return true;
     }
 
-    int[][] getGrid() { return grid; }
+    int[][] getGrid() {
+        int[][] copy = new int[grid.length][];
+        for (int y = 0; y < grid.length; y++) copy[y] = grid[y].clone();
+        return copy;
+    }
+
+    public boolean isTileMovable(int x, int y) {
+        int size = GameConstants.MINIGAME_GRID_SIZE;
+        if (x < 0 || y < 0 || x >= size || y >= size || grid[y][x] == 0) return false;
+        for (int dy = -1; dy <= 1; dy++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                if (Math.abs(dx) + Math.abs(dy) != 1) continue;
+                int nx = x + dx, ny = y + dy;
+                if (nx >= 0 && ny >= 0 && nx < size && ny < size && grid[ny][nx] == 0) return true;
+            }
+        }
+        return false;
+    }
     public int getMovesCount() { return movesCount; }
 }

@@ -14,7 +14,7 @@ public class MarineAnimal extends Obstacle {
         return false;
     }
     @Override
-    public String getImageName() {
-        return "marineanimal.png";
+    public CellType getType() {
+        return CellType.MARINE_ANIMAL;
     }
 }

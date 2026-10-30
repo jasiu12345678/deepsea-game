@@ -1,52 +1,93 @@
 package pt.isec.pa.deepsea.ui;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Separator;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import pt.isec.pa.deepsea.model.GameConstants;
 import pt.isec.pa.deepsea.model.Manager;
+import pt.isec.pa.deepsea.model.State;
 
+/**
+ * Read-only side panel with ship and drone information and the controls that
+ * apply to the current game state. It only displays what the {@link Manager} reports.
+ */
 public class SidebarUI extends VBox {
     private final Manager manager;
-    private final Label shipFuelLabel = new Label();
-    private final Label oreLabel = new Label();
-    private final Label artifactLabel = new Label();
-    private final Label droneHpLabel = new Label();
-    private final ProgressBar droneHpBar = new ProgressBar();
-    private final Label droneFuelLabel = new Label();
-    private final ProgressBar droneFuelBar = new ProgressBar();
-
-    private final Label controlsLabel = new Label();
+    private final Label shipFuel = value();
+    private final Label ore = value();
+    private final Label artifacts = value();
+    private final Label droneName = new Label();
+    private final Label droneHull = value();
+    private final Label droneFuel = value();
+    private final ProgressBar hullBar = bar(false);
+    private final ProgressBar fuelBar = bar(true);
+    private final VBox controls = new VBox(8);
 
     public SidebarUI(Manager manager) {
         this.manager = manager;
-        this.setPadding(new Insets(15));
-        this.setSpacing(15);
-        this.setPrefWidth(220);
-        this.setStyle("-fx-background-color: #1e1e24;");
+        getStyleClass().add("sidebar");
+        setPadding(new Insets(22, 20, 20, 20));
+        setSpacing(10);
+        setPrefWidth(230);
+        setMinWidth(230);
         createViews();
         registerListeners();
         update();
     }
 
+    private static Label value() {
+        Label label = new Label();
+        label.getStyleClass().add("stat-value");
+        return label;
+    }
+
+    private static ProgressBar bar(boolean fuel) {
+        ProgressBar bar = new ProgressBar(0);
+        bar.setMaxWidth(Double.MAX_VALUE);
+        bar.setPrefHeight(8);
+        if (fuel) bar.getStyleClass().add("fuel");
+        return bar;
+    }
+
+    private static Label section(String text) {
+        Label label = new Label(text);
+        label.getStyleClass().add("section-title");
+        return label;
+    }
+
+    private static HBox row(String name, Label value) {
+        Label label = new Label(name);
+        label.getStyleClass().add("stat-name");
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        HBox box = new HBox(label, spacer, value);
+        box.setAlignment(Pos.CENTER_LEFT);
+        return box;
+    }
+
     private void createViews() {
-        shipFuelLabel.setStyle("-fx-text-fill: white; -fx-font-size: 14px;");
-        oreLabel.setStyle("-fx-text-fill: white; -fx-font-size: 14px;");
-        artifactLabel.setStyle("-fx-text-fill: white; -fx-font-size: 14px;");
-        droneHpLabel.setStyle("-fx-text-fill: white; -fx-font-size: 14px;");
-        droneFuelLabel.setStyle("-fx-text-fill: white; -fx-font-size: 14px;");
+        Label title = new Label("DEEP SEA MINING");
+        title.getStyleClass().add("app-title");
+        droneName.getStyleClass().add("drone-name");
 
-        controlsLabel.setStyle("-fx-text-fill: #ffcc00; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 20 0 0 0;");
-
-        droneHpBar.setPrefWidth(200);
-        droneFuelBar.setPrefWidth(200);
-
-        this.getChildren().addAll(
-                shipFuelLabel, oreLabel, artifactLabel,
-                droneHpLabel, droneHpBar,
-                droneFuelLabel, droneFuelBar,
-                controlsLabel
+        getChildren().addAll(
+                title,
+                new Separator(),
+                section("SHIP"),
+                row("Fuel", shipFuel),
+                row("Ore", ore),
+                row("Artifacts", artifacts),
+                section("ACTIVE DRONE"),
+                droneName,
+                row("Hull", droneHull), hullBar,
+                row("Fuel", droneFuel), fuelBar,
+                section("CONTROLS"),
+                controls
         );
     }
 
@@ -56,47 +97,47 @@ public class SidebarUI extends VBox {
     }
 
     private void update() {
-        shipFuelLabel.setText("Ship Fuel: " + manager.getShipFuel());
-        oreLabel.setText("Ores Collected: " + manager.getOreCount());
-        artifactLabel.setText("Artifacts: " + manager.getArtifactCount() + " / " + GameConstants.TOTAL_ARTIFACTS);
-        droneHpLabel.setText(manager.getActiveDroneName() + " - Hull:");
+        shipFuel.setText(String.valueOf(manager.getShipFuel()));
+        ore.setText(String.valueOf(manager.getOreCount()));
+        artifacts.setText(manager.getArtifactCount() + " / " + manager.getTotalArtifacts());
 
-        double maxHp = manager.getActiveDroneMaxHP();
-        if (maxHp > 0) {
-            droneHpBar.setProgress(manager.getActiveDroneHP() / maxHp);
-        } else {
-            droneHpBar.setProgress(0);
+        droneName.setText(manager.hasActiveDrone() ? manager.getActiveDroneName() : "No drone deployed");
+        droneHull.setText(manager.getActiveDroneHP() + " / " + manager.getActiveDroneMaxHP());
+        droneFuel.setText(manager.getActiveDroneFuel() + " / " + manager.getActiveDroneMaxFuel());
+        hullBar.setProgress(ratio(manager.getActiveDroneHP(), manager.getActiveDroneMaxHP()));
+        fuelBar.setProgress(ratio(manager.getActiveDroneFuel(), manager.getActiveDroneMaxFuel()));
+
+        updateControls();
+    }
+
+    private static double ratio(int value, int max) {
+        return max > 0 ? (double) value / max : 0;
+    }
+
+    private void updateControls() {
+        controls.getChildren().clear();
+        State state = manager.getState();
+        if (state == null) return;
+
+        switch (state) {
+            case SURFACE -> add("W A S D", "Move ship", "Enter", "Dive", "Tab", "Workshop");
+            case TRENCH -> add("W A S D", "Move drone");
+            case SEABED -> add("W A S D", "Move drone", "Space", "Collect", "Y / N", "Confirm", "Backspace", "Ascend");
+            case WORKSHOP -> add("Esc", "Leave workshop");
+            case MINIGAME -> add("W A S D", "Slide tiles");
+            case GAME_OVER -> add("Game > New", "Play again");
         }
+    }
 
-        droneFuelLabel.setText("Drone Fuel:");
-        double maxFuel = manager.getActiveDroneMaxFuel();
-        if (maxFuel > 0) {
-            droneFuelBar.setProgress(manager.getActiveDroneFuel() / maxFuel);
-        } else {
-            droneFuelBar.setProgress(0);
-        }
-
-        if (manager.getState() != null) {
-            switch (manager.getState()) {
-                case SURFACE:
-                    controlsLabel.setText("CONTROLS:\n[WSAD] Move Ship\n[ENTER] Dive\n[TAB] Workshop");
-                    break;
-                case SEABED:
-                    controlsLabel.setText("CONTROLS:\n[WSAD] Move Drone\n[SPACE] Collect Item\n[BACKSPACE] Ascend\n[Y] / [N] Confirm pickup");
-                    break;
-                case WORKSHOP:
-                    controlsLabel.setText("CONTROLS:\n[ESC] Close Workshop\nUse the buttons");
-                    break;
-                case MINIGAME:
-                    controlsLabel.setText("CONTROLS:\n[WSAD] / [Arrows] Slide tiles");
-                    break;
-                case TRENCH:
-                    controlsLabel.setText("CONTROLS:\n[WSAD] Move Drone");
-                    break;
-                case GAME_OVER:
-                    controlsLabel.setText("Game Over.");
-                    break;
-            }
+    private void add(String... pairs) {
+        for (int i = 0; i < pairs.length; i += 2) {
+            Label chip = new Label(pairs[i]);
+            chip.getStyleClass().add("key-chip");
+            Label desc = new Label(pairs[i + 1]);
+            desc.getStyleClass().add("key-desc");
+            HBox line = new HBox(10, chip, desc);
+            line.setAlignment(Pos.CENTER_LEFT);
+            controls.getChildren().add(line);
         }
     }
 }

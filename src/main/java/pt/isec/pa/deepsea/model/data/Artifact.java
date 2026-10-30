@@ -35,8 +35,8 @@ public class Artifact extends Collectible {
         return true;
     }
     @Override
-    public String getImageName() {
-        return "artifact.png";
+    public CellType getType() {
+        return CellType.ARTIFACT;
     }
 
 }

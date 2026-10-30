@@ -89,16 +89,16 @@ public class GameData implements Serializable {
         return cell.getSeabed().isRevealed(x, y);
     }
 
-    public String getSeabedElementImage(int x, int y) {
+    public CellType getSeabedElementType(int x, int y) {
         var cell = map.getCell(ship.getX(), ship.getY());
-        if (cell == null || cell.getSeabed() == null) return "water.png";
-        return cell.getSeabed().getElementImage(x, y);
+        if (cell == null || cell.getSeabed() == null) return CellType.WATER;
+        return cell.getSeabed().getElementType(x, y);
     }
 
-    public String getTrenchElementImage(int x, int y) {
+    public CellType getTrenchElementType(int x, int y) {
         var cell = map.getCell(ship.getX(), ship.getY());
-        if (cell == null || cell.getTrench() == null) return "water.png";
-        return cell.getTrench().getElementImage(x, y);
+        if (cell == null || cell.getTrench() == null) return CellType.WATER;
+        return cell.getTrench().getElementType(x, y);
     }
 
     // methods
@@ -179,6 +179,10 @@ public class GameData implements Serializable {
 
     public int getPuzzleMovesCount() {
         return minigame != null ? minigame.getMovesCount() : 0;
+    }
+
+    public boolean isPuzzleTileMovable(int x, int y) {
+        return minigame != null && minigame.isTileMovable(x, y);
     }
 
     public boolean hasPendingCollectible() {

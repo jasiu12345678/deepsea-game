@@ -15,7 +15,7 @@ public class Water extends Obstacle{
     public boolean isEmpty() {return true;}
 
     @Override
-    public String getImageName() {
-        return "water.png";
+    public CellType getType() {
+        return CellType.WATER;
     }
 }

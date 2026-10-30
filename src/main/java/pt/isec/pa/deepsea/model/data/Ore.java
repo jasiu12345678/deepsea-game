@@ -41,7 +41,7 @@ public class Ore extends Collectible {
     }
 
     @Override
-    public String getImageName() {
-        return "ore.png";
+    public CellType getType() {
+        return CellType.ORE;
     }
 }

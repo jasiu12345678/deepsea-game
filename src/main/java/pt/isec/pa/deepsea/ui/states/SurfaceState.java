@@ -1,14 +1,17 @@
 package pt.isec.pa.deepsea.ui.states;
 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 import pt.isec.pa.deepsea.model.Directions;
 import pt.isec.pa.deepsea.model.GameConstants;
 import pt.isec.pa.deepsea.model.Manager;
 import pt.isec.pa.deepsea.model.State;
+import pt.isec.pa.deepsea.ui.Theme;
 import pt.isec.pa.deepsea.ui.res.SoundManager;
-import pt.isec.pa.deepsea.ui.utils.ImageLoader;
+import pt.isec.pa.deepsea.ui.utils.Sprites;
 
+/**
+ * Surface view: the open water where the ship sails, dives and visits the workshop.
+ */
 public class SurfaceState extends CanvasState {
 
     public SurfaceState(Manager manager) {
@@ -47,31 +50,20 @@ public class SurfaceState extends CanvasState {
     protected void draw() {
         if (!isVisible()) return;
 
+        clear(Theme.BG_DEEP);
         GraphicsContext gc = getGraphicsContext2D();
-        gc.clearRect(0, 0, getWidth(), getHeight());
-        gc.setFill(Color.rgb(135, 206, 235));
-        gc.fillRect(0, 0, getWidth(), getHeight());
 
         int cols = GameConstants.SURFACE_WIDTH;
         int rows = GameConstants.SURFACE_HEIGHT;
-        if (cols <= 0 || rows <= 0) return;
+        double tile = Math.min(getWidth() / cols, getHeight() / rows);
+        double offsetX = (getWidth() - cols * tile) / 2;
+        double offsetY = (getHeight() - rows * tile) / 2;
 
-        double tileSize = Math.min(getWidth() / cols, getHeight() / rows);
-        double offsetX = (getWidth() - cols * tileSize) / 2;
-        double offsetY = (getHeight() - rows * tileSize) / 2;
-
-        var waterImg = ImageLoader.getImage("water.png");
-        if (waterImg != null) {
-            for (int y = 0; y < rows; y++) {
-                for (int x = 0; x < cols; x++) {
-                    gc.drawImage(waterImg, offsetX + x * tileSize, offsetY + y * tileSize, tileSize, tileSize);
-                }
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < cols; x++) {
+                Sprites.water(gc, offsetX + x * tile, offsetY + y * tile, tile);
             }
         }
-
-        var shipImg = ImageLoader.getImage("ship.png");
-        if (shipImg != null) {
-            gc.drawImage(shipImg, offsetX + manager.getShipX() * tileSize, offsetY + manager.getShipY() * tileSize, tileSize, tileSize);
-        }
+        Sprites.ship(gc, offsetX + manager.getShipX() * tile, offsetY + manager.getShipY() * tile, tile);
     }
 }

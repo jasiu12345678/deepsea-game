@@ -13,8 +13,10 @@ import pt.isec.pa.deepsea.model.Manager;
 import pt.isec.pa.deepsea.ui.res.SoundManager;
 
 import java.io.File;
-import java.io.FileWriter;
 
+/**
+ * Menu bar (game, log and sound options) and the real-time log window.
+ */
 public class MainUI extends MenuBar {
     private final Manager manager;
     private Stage logStage;
@@ -32,46 +34,40 @@ public class MainUI extends MenuBar {
     }
 
     private void registerListeners() {
-        manager.addClient("log", evt -> updateLogText());
+        manager.addClient(Manager.LOG, evt -> updateLogText());
         updateLogText();
     }
 
     private void initLogWindow() {
         logStage = new Stage();
-        logStage.setTitle("Deep Sea Mining - Realtime Logs");
+        logStage.setTitle("Deep Sea Mining - Log");
         logTextArea = new TextArea();
         logTextArea.setEditable(false);
         logTextArea.setWrapText(true);
+        logTextArea.getStyleClass().add("log-area");
 
-        logTextArea.setStyle(
-                "-fx-control-inner-background: #0d1624; " +
-                        "-fx-text-fill: #a2b4cd; " +
-                        "-fx-font-family: 'Consolas', monospace; " +
-                        "-fx-font-size: 12px;"
-        );
-
-        logStage.setScene(new Scene(logTextArea, 550, 400));
+        Scene scene = new Scene(logTextArea, 560, 400);
+        scene.getStylesheets().add(Theme.STYLESHEET);
+        logStage.setScene(scene);
     }
 
     private void updateLogText() {
-        StringBuilder sb = new StringBuilder();
-        for (String s : manager.getLogs()) sb.append(s).append("\n");
-        logTextArea.setText(sb.toString());
+        logTextArea.setText(String.join("\n", manager.getLogs()));
         logTextArea.setScrollTop(Double.MAX_VALUE);
     }
 
     private void refreshRecentMenu(Menu menuRecent) {
         menuRecent.getItems().clear();
-        var recent = RecentGames.load();
+        var recent = manager.getRecentGames();
         if (recent.isEmpty()) {
-            MenuItem empty = new MenuItem("(no recent games)");
+            MenuItem empty = new MenuItem("No recent games");
             empty.setDisable(true);
             menuRecent.getItems().add(empty);
             return;
         }
         for (String path : recent) {
             MenuItem item = new MenuItem(path);
-            item.setOnAction(ev -> { if (manager.load(path)) RecentGames.add(path); });
+            item.setOnAction(ev -> manager.load(path));
             menuRecent.getItems().add(item);
         }
     }
@@ -84,29 +80,23 @@ public class MainUI extends MenuBar {
         MenuItem itemSave = new MenuItem("Save as...");
         MenuItem itemExit = new MenuItem("Exit");
 
+        itemNew.setOnAction(e -> manager.newGame());
         itemOpen.setOnAction(e -> {
-            FileChooser fc = new FileChooser();
-            File file = fc.showOpenDialog(getScene().getWindow());
-            if (file != null && manager.load(file.getAbsolutePath()))
-                RecentGames.add(file.getAbsolutePath());
+            File file = new FileChooser().showOpenDialog(getScene().getWindow());
+            if (file != null) manager.load(file.getAbsolutePath());
         });
         itemSave.setOnAction(e -> {
-            FileChooser fc = new FileChooser();
-            File file = fc.showSaveDialog(getScene().getWindow());
-            if (file != null && manager.save(file.getAbsolutePath()))
-                RecentGames.add(file.getAbsolutePath());
+            File file = new FileChooser().showSaveDialog(getScene().getWindow());
+            if (file != null) manager.save(file.getAbsolutePath());
         });
-
-        menuGame.setOnShowing(e-> refreshRecentMenu(menuRecent));
         itemExit.setOnAction(e -> Platform.exit());
-        itemNew.setOnAction(e -> manager.newGame());
-
+        menuGame.setOnShowing(e -> refreshRecentMenu(menuRecent));
         menuGame.getItems().addAll(itemNew, itemOpen, menuRecent, itemSave, itemExit);
 
         Menu menuLog = new Menu("Log");
-        MenuItem itemToggleLog = new MenuItem("Show/Hide");
-        MenuItem itemSaveLog = new MenuItem("Save logs");
-        MenuItem itemClearLog = new MenuItem("Clear logs");
+        MenuItem itemToggleLog = new MenuItem("Show / hide");
+        MenuItem itemSaveLog = new MenuItem("Save log...");
+        MenuItem itemClearLog = new MenuItem("Clear log");
 
         itemToggleLog.setOnAction(e -> {
             if (logStage.isShowing()) {
@@ -116,32 +106,18 @@ public class MainUI extends MenuBar {
                 logStage.show();
             }
         });
-
         itemSaveLog.setOnAction(e -> {
-            FileChooser fileChooser = new FileChooser();
-            File file = fileChooser.showSaveDialog(this.getScene().getWindow());
-            if (file != null) {
-                try (FileWriter writer = new FileWriter(file)) {
-                    for (String s : manager.getLogs()) {
-                        writer.write(s + "\n");
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
+            File file = new FileChooser().showSaveDialog(getScene().getWindow());
+            if (file != null) manager.saveLogs(file.getAbsolutePath());
         });
-
-        itemClearLog.setOnAction(e -> {
-            manager.clearLogs();
-        });
-
+        itemClearLog.setOnAction(e -> manager.clearLogs());
         menuLog.getItems().addAll(itemToggleLog, itemSaveLog, itemClearLog);
 
         Menu menuSound = new Menu("Sound");
         CheckMenuItem itemToggleSound = new CheckMenuItem("Sound enabled");
         itemToggleSound.selectedProperty().bindBidirectional(SoundManager.enabledProperty());
         menuSound.getItems().add(itemToggleSound);
-        this.getMenus().addAll(menuGame, menuLog, menuSound);
 
+        getMenus().addAll(menuGame, menuLog, menuSound);
     }
 }

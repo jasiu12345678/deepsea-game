@@ -1,4 +1,4 @@
-package pt.isec.pa.deepsea.ui;
+package pt.isec.pa.deepsea.model;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -6,6 +6,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Remembers the most recently used save files between sessions.
+ */
 public final class RecentGames {
     private static final String FILE = "recent.txt";
     private static final int MAX = 5;

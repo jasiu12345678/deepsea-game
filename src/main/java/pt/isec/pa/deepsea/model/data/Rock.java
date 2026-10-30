@@ -13,7 +13,7 @@ public class Rock extends Obstacle{
         return true;
     }
     @Override
-    public String getImageName() {
-        return "rock.png";
+    public CellType getType() {
+        return CellType.ROCK;
     }
 }

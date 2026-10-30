@@ -37,13 +37,20 @@ You win by recovering all **5 artifacts**. You lose when the ship runs out of fu
 The menu bar offers saving/loading games (with a recent-games list), a real-time log window and a sound toggle.
 A second window with an independent view of the same game is opened on start-up to demonstrate the MVC setup.
 
+## Design
+
+The interface uses a minimalist dark grey palette with pale and muted green accents. All game graphics are
+vector shapes drawn on JavaFX canvases (`ui/utils/Sprites`), and the whole look is defined in
+`src/main/resources/style.css` and `ui/Theme`.
+
 ## Architecture
 
 - **State pattern** - `Context` delegates every action to the current `IState`
   (`SurfaceState`, `TrenchState`, `SeabedState`, `WorkshopState`, `MiniGameState`, `GameOverState`).
   See the [state diagram](docs/state-diagram.pdf).
-- **Model / UI separation** - the UI only talks to `Manager`, a facade that exposes the model and notifies
-  views through `PropertyChangeSupport`. Several views can observe the same model.
+- **Model / UI separation** - the UI only talks to `Manager`, a facade that exposes read-only information
+  (cell types, drone stats, move outcomes, puzzle state) and notifies views through `PropertyChangeSupport`.
+  Views contain no game rules and no file handling. Several views can observe the same model.
 - **Polymorphic grid elements** - `Rock`, `Ore`, `Artifact`, `Monster`, ... implement their own `interact` and
   `collect` behaviour, so `GameData` is not a god object.
 - **Serialization** for save/load and a singleton `Log` for the in-game log.

@@ -131,11 +131,11 @@ public class SeabedGrid implements Serializable, IGrid {
     }
 
     @Override
-    public String getElementImage(int x, int y) {
-        if (isOutOfBounds(x, y)) return "water.png";
+    public CellType getElementType(int x, int y) {
+        if (isOutOfBounds(x, y)) return CellType.WATER;
         GridElement element = grid[y][x];
-        if (element == null) return "water.png";
-        return element.getImageName();
+        if (element == null) return CellType.WATER;
+        return element.getType();
     }
 
 }

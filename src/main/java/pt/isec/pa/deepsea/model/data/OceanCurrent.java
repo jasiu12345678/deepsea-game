@@ -13,7 +13,7 @@ public class OceanCurrent extends Obstacle {
         return false;
     }
     @Override
-    public String getImageName() {
-        return "current.png";
+    public CellType getType() {
+        return CellType.CURRENT;
     }
 }

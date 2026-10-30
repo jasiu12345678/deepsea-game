@@ -23,8 +23,8 @@ class SeabedGridTest {
     @Test
     void testOutOfBoundsReturnsWater() {
         SeabedGrid grid = new SeabedGrid(false);
-        assertEquals("water.png", grid.getElementImage(-1, 0), "Out of bounds should be treated as water");
-        assertEquals("water.png", grid.getElementImage(0, GameConstants.SEABED_HEIGHT), "Out of bounds should be treated as water");
+        assertEquals(CellType.WATER, grid.getElementType(-1, 0), "Out of bounds should be treated as water");
+        assertEquals(CellType.WATER, grid.getElementType(0, GameConstants.SEABED_HEIGHT), "Out of bounds should be treated as water");
     }
 
     @Test
@@ -32,7 +32,7 @@ class SeabedGridTest {
         GameConstants.PRESENTATION_MODE = true;
         SeabedGrid grid = new SeabedGrid(false);
 
-        assertEquals("monster.png", grid.getElementImage(0, 0), "Presentation layout places a monster at the origin");
+        assertEquals(CellType.MONSTER, grid.getElementType(0, 0), "Presentation layout places a monster at the origin");
         assertTrue(grid.isRevealed(0, 0), "Presentation layout reveals every cell");
     }
 

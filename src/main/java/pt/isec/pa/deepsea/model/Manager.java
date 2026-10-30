@@ -1,5 +1,6 @@
 package pt.isec.pa.deepsea.model;
 
+import pt.isec.pa.deepsea.model.data.CellType;
 import pt.isec.pa.deepsea.model.data.DroneInfo;
 import pt.isec.pa.deepsea.model.data.GameData;
 
@@ -27,6 +28,7 @@ public class Manager {
     private GameData data;
     private Context context;
     PropertyChangeSupport pcs;
+    private MoveOutcome lastMoveOutcome = MoveOutcome.NONE;
     public final static String DATA = "data";
     public final static String STATE = "state";
     public final static String LOG = "log";
@@ -46,7 +48,44 @@ public class Manager {
         return result;
     }
 
-    public boolean navigate(Directions dir)   { State b = context.getState(); return handler(b, context.navigate(dir)); }
+    public boolean navigate(Directions dir) {
+        State before = context.getState();
+        boolean hadDrone = data.hasActiveDrone();
+        int hpBefore = data.getActiveDroneHP();
+        CellType target = targetCell(before, dir);
+
+        boolean result = context.navigate(dir);
+
+        if (before != State.TRENCH && before != State.SEABED) {
+            lastMoveOutcome = MoveOutcome.NONE;
+        } else if (hadDrone && !data.hasActiveDrone()) {
+            lastMoveOutcome = MoveOutcome.DRONE_DESTROYED;
+        } else if (data.hasActiveDrone() && data.getActiveDroneHP() < hpBefore) {
+            boolean creature = target == CellType.MARINE_ANIMAL || target == CellType.MONSTER;
+            lastMoveOutcome = creature ? MoveOutcome.HIT_CREATURE : MoveOutcome.HIT_OBSTACLE;
+        } else {
+            lastMoveOutcome = result ? MoveOutcome.MOVED : MoveOutcome.NONE;
+        }
+        return handler(before, result);
+    }
+
+    private CellType targetCell(State state, Directions dir) {
+        if (!data.hasActiveDrone()) return CellType.WATER;
+        int x = data.getDroneX(), y = data.getDroneY();
+        switch (dir) {
+            case UP -> y--;
+            case DOWN -> y++;
+            case LEFT -> x--;
+            case RIGHT -> x++;
+        }
+        return switch (state) {
+            case TRENCH -> data.getTrenchElementType(x, y);
+            case SEABED -> data.getSeabedElementType(x, y);
+            default -> CellType.WATER;
+        };
+    }
+
+    public MoveOutcome getLastMoveOutcome() { return lastMoveOutcome; }
     public boolean startDescent()             { State b = context.getState(); return handler(b, context.startDescent()); }
     public boolean startAscent()              { State b = context.getState(); return handler(b, context.startAscent()); }
     public boolean openWorkshop()             { State b = context.getState(); return handler(b, context.openWorkshop()); }
@@ -63,12 +102,12 @@ public class Manager {
     public int getDroneX() { return data.getDroneX(); }
     public int getDroneY() { return data.getDroneY(); }
 
-    public String getSeabedElementImage(int x, int y) {
-        return data.getSeabedElementImage(x, y);
+    public CellType getSeabedElementType(int x, int y) {
+        return data.getSeabedElementType(x, y);
     }
 
-    public String getTrenchElementImage(int x, int y) {
-        return data.getTrenchElementImage(x, y);
+    public CellType getTrenchElementType(int x, int y) {
+        return data.getTrenchElementType(x, y);
     }
 
     public void addClient(String property, PropertyChangeListener listener) {
@@ -119,6 +158,31 @@ public class Manager {
         return data.isSeabedRevealed(x, y);
     }
 
+    public boolean isCollectibleUnderDrone() {
+        if (!data.hasActiveDrone()) return false;
+        CellType type = data.getSeabedElementType(data.getDroneX(), data.getDroneY());
+        return type == CellType.ORE || type == CellType.ARTIFACT;
+    }
+
+    public boolean isVictory() { return data.checkWinCondition(); }
+
+    public int getTotalArtifacts() { return GameConstants.TOTAL_ARTIFACTS; }
+
+    public boolean isPuzzleTileMovable(int x, int y) { return data.isPuzzleTileMovable(x, y); }
+
+    public int getPuzzleMovesLeft() {
+        return Math.max(0, GameConstants.MAX_PUZZLE_MOVES - data.getPuzzleMovesCount());
+    }
+
+    public List<String> getRecentGames() { return RecentGames.load(); }
+
+    public boolean saveLogs(String filename) {
+        try (java.io.FileWriter writer = new java.io.FileWriter(filename)) {
+            for (String line : Log.getInstance().getLogs()) writer.write(line + "\n");
+            return true;
+        } catch (IOException e) { return false; }
+    }
+
     public boolean isAwaitingConfirmation() {
         return context.isAwaitingConfirmation();
     }
@@ -134,6 +198,7 @@ public class Manager {
     public boolean save(String filename) {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filename))) {
             out.writeObject(context);
+            RecentGames.add(filename);
             return true;
         } catch (IOException e) { return false; }
     }
@@ -146,6 +211,7 @@ public class Manager {
             pcs.firePropertyChange(DATA, null, context);
             pcs.firePropertyChange(STATE, before, context.getState());
             Log.getInstance().addLog("Game loaded: " + filename);
+            RecentGames.add(filename);
             return true;
         } catch (Exception e) { return false; }
     }

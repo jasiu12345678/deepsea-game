@@ -18,10 +18,13 @@ public class MainJFX extends Application {
         RootPane root = new RootPane(manager);
         Scene scene = new Scene(root, 1024, 768);
 
+        scene.getStylesheets().add(Theme.STYLESHEET);
         root.requestFocus();
 
         second.setTitle("Deep Sea Mining - Second View");
-        second.setScene(new Scene(new RootPane(manager)));
+        Scene secondScene = new Scene(new RootPane(manager), 1024, 768);
+        secondScene.getStylesheets().add(Theme.STYLESHEET);
+        second.setScene(secondScene);
         second.show();
 
         primaryStage.setTitle("Deep Sea Mining");

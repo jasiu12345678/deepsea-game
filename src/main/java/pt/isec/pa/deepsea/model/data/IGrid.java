@@ -9,5 +9,5 @@ public interface IGrid {
     default boolean isOutOfBounds(int x, int y) {
         return x < 0 || x >= getWidth() || y < 0 || y >= getHeight();
     }
-    String getElementImage(int x, int y);
+    CellType getElementType(int x, int y);
 }

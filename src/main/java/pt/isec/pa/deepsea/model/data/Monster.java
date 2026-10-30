@@ -14,7 +14,7 @@ public class Monster extends Obstacle {
         return false;
     }
     @Override
-    public String getImageName() {
-        return "monster.png";
+    public CellType getType() {
+        return CellType.MONSTER;
     }
 }

@@ -2,17 +2,18 @@ package pt.isec.pa.deepsea.ui.states;
 
 import javafx.geometry.VPos;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 import pt.isec.pa.deepsea.model.Directions;
 import pt.isec.pa.deepsea.model.GameConstants;
 import pt.isec.pa.deepsea.model.Manager;
 import pt.isec.pa.deepsea.model.State;
-import pt.isec.pa.deepsea.ui.res.SoundManager;
-import pt.isec.pa.deepsea.ui.utils.ImageLoader;
+import pt.isec.pa.deepsea.ui.Theme;
+import pt.isec.pa.deepsea.ui.utils.Sprites;
 
+/**
+ * Seabed view: a fog-of-war grid explored by the drone to collect ore and artifacts.
+ */
 public class SeabedState extends CanvasState {
 
     public SeabedState(Manager manager) {
@@ -44,104 +45,61 @@ public class SeabedState extends CanvasState {
     }
 
     private void moveDrone(Directions dir) {
-        boolean hadDrone = manager.hasActiveDrone();
-        int hpBefore = manager.getActiveDroneHP();
-        boolean moved = manager.navigate(dir);
-        if (hadDrone && !manager.hasActiveDrone()) {
-            SoundManager.playForever(SoundManager.DRONE_DESTROYED);
-        } else if (manager.hasActiveDrone() && manager.getActiveDroneHP() < hpBefore) {
-            int tx = manager.getDroneX();
-            int ty = manager.getDroneY();
-            switch (dir) {
-                case UP -> ty--;
-                case DOWN -> ty++;
-                case LEFT -> tx--;
-                case RIGHT -> tx++;
-            }
-            if (("marineanimal.png".equals(manager.getSeabedElementImage(tx, ty))) || ("monster.png").equals(manager.getSeabedElementImage(tx,ty))) {
-                SoundManager.playThen(SoundManager.DRONE_MOVE, SoundManager.DRONE_ANIMAL);
-            } else {
-                SoundManager.play(SoundManager.DRONE_HIT);
-            }
-        } else if (moved) {
-            SoundManager.play(SoundManager.DRONE_MOVE);
-        }
+        manager.navigate(dir);
+        playMoveSound();
     }
 
     @Override
     protected void draw() {
         if (!isVisible()) return;
 
+        clear(Theme.BG_DEEP);
         GraphicsContext gc = getGraphicsContext2D();
-        gc.clearRect(0, 0, getWidth(), getHeight());
-        gc.setFill(Color.rgb(10, 20, 40));
-        gc.fillRect(0, 0, getWidth(), getHeight());
 
         int cols = GameConstants.SEABED_WIDTH;
         int rows = GameConstants.SEABED_HEIGHT;
-        if (cols <= 0 || rows <= 0) return;
-
-        double tileSize = Math.min(getWidth() / cols, getHeight() / rows);
-        double offsetX = (getWidth() - cols * tileSize) / 2;
-        double offsetY = (getHeight() - rows * tileSize) / 2;
+        double tile = Math.min(getWidth() / cols, getHeight() / rows);
+        double offsetX = (getWidth() - cols * tile) / 2;
+        double offsetY = (getHeight() - rows * tile) / 2;
 
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
-                double drawX = offsetX + x * tileSize;
-                double drawY = offsetY + y * tileSize;
-
-                if (!manager.isSeabedRevealed(x, y)) {
-                    gc.setFill(Color.BLACK);
-                    gc.fillRect(drawX, drawY, tileSize, tileSize);
-                    continue;
-                }
-
-                String imgName = manager.getSeabedElementImage(x, y);
-                if (imgName != null && !imgName.isEmpty()) {
-                    var img = ImageLoader.getImage(imgName);
-                    if (img != null) {
-                        gc.drawImage(img, drawX, drawY, tileSize, tileSize);
-                    }
+                double px = offsetX + x * tile;
+                double py = offsetY + y * tile;
+                if (manager.isSeabedRevealed(x, y)) {
+                    Sprites.cell(gc, manager.getSeabedElementType(x, y), px, py, tile);
+                } else {
+                    Sprites.fog(gc, px, py, tile);
                 }
             }
         }
 
         if (manager.hasActiveDrone()) {
-            double dronePixelX = offsetX + manager.getDroneX() * tileSize;
-            double dronePixelY = offsetY + manager.getDroneY() * tileSize;
-            var droneImg = ImageLoader.getImage("drone.png");
-            if (droneImg != null) {
-                gc.drawImage(droneImg, dronePixelX, dronePixelY, tileSize, tileSize);
-            }
-            drawInteractionPrompt(gc, manager.getDroneX(), manager.getDroneY(), dronePixelX, dronePixelY, tileSize);
+            double px = offsetX + manager.getDroneX() * tile;
+            double py = offsetY + manager.getDroneY() * tile;
+            Sprites.drone(gc, px, py, tile);
+            drawPrompt(gc, px, py, tile);
         }
     }
 
-    private void drawInteractionPrompt(GraphicsContext gc, int gridX, int gridY, double px, double py, double tileSize) {
-        String currentElement = manager.getSeabedElementImage(gridX, gridY);
-        if (currentElement == null || currentElement.isEmpty() || currentElement.equals("monster.png") || currentElement.equals("water.png")) {
-            return;
-        }
-        boolean isInteractable = currentElement.equals("ore.png") || currentElement.equals("artifact.png");
-        if (!isInteractable) return;
+    private void drawPrompt(GraphicsContext gc, double px, double py, double tile) {
+        if (!manager.isCollectibleUnderDrone()) return;
 
-        String promptText;
-        if (manager.isAwaitingConfirmation()) {
-            promptText = "Collect? (Y / N)";
-            gc.setFill(Color.rgb(231, 76, 60, 0.9));
-        } else {
-            promptText = "Press [SPACE]";
-            gc.setFill(Color.rgb(46, 204, 113, 0.9));
-        }
-        gc.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        String text = manager.isAwaitingConfirmation() ? "Collect?  Y / N" : "Press SPACE";
+        double width = 130;
+        double height = 28;
+        double x = px + tile / 2 - width / 2;
+        double y = Math.max(4, py - height - 8);
+
+        gc.setFill(Theme.BG_RAISED);
+        gc.fillRoundRect(x, y, width, height, 8, 8);
+        gc.setStroke(Theme.ACCENT_DARK);
+        gc.setLineWidth(1);
+        gc.strokeRoundRect(x, y, width, height, 8, 8);
+        gc.setFill(Theme.ACCENT);
+        gc.setFont(Theme.font(12, FontWeight.BOLD));
         gc.setTextAlign(TextAlignment.CENTER);
         gc.setTextBaseline(VPos.CENTER);
-        double textWidth = 120;
-        double textHeight = 25;
-        double boxX = px + tileSize / 2 - textWidth / 2;
-        double boxY = py - textHeight - 10;
-        gc.fillRoundRect(boxX, boxY, textWidth, textHeight, 10, 10);
-        gc.setFill(Color.WHITE);
-        gc.fillText(promptText, px + tileSize / 2, boxY + textHeight / 2);
+        gc.fillText(text, x + width / 2, y + height / 2);
     }
 }
